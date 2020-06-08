@@ -19,6 +19,19 @@ class UserManager(BaseUserManager):
 
         return user
 
+    def create_superuser(self, email, password=None):
+        """Creates and save a new superuser"""
+        if not email:
+            raise ValueError("User must have email address")
+        email = self.normalize_email(email)
+        user = self.model(email=email)
+        user.set_password(password)
+        user.is_superuser = True
+        user.is_staff = True
+        user.save(using=self._db)
+
+        return user
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     """Custom user model that supports using email instade of the default username"""
@@ -26,7 +39,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
-    is_stuff = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
 
     objects = UserManager()
 
