@@ -59,8 +59,6 @@ class PublicUsersApiTests(TestCase):
     def test_getting_user_lists(self):
         """Test all user lists"""
 
-        res = self.client.get("CREATE_USER_URL")
-        print(res.data)
-        print(res.status_code)
+        res = self.client.get(CREATE_USER_URL)
 
         self.assertEquals(res.status_code, status.HTTP_200_OK)
