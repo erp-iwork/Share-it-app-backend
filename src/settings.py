@@ -37,9 +37,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "main",
-    "corsheaders",
     "rest_framework",
+    "rest_framework.authtoken",
+    "corsheaders",
+    "user",
+    "main",
 ]
 
 MIDDLEWARE = [
@@ -144,4 +146,3 @@ CORS_ALLOW_HEADERS = [
 ]
 
 AUTH_USER_MODEL = "main.User"
-
