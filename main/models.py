@@ -37,9 +37,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     """Custom user model that supports using email instade of the default username"""
 
     email = models.EmailField(max_length=255, unique=True)
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    gender = models.CharField(max_length=100)
+    name = models.CharField(max_length=255)
+    location = models.CharField(max_length=100, blank=True, null=True)
+    # image = models.ImageField(upload_to="profile_pics", default="no-img.png")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
