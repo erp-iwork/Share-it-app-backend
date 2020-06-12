@@ -1,11 +1,13 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse, resolve
+import os
 
 from rest_framework.test import APIClient
 from rest_framework import status
 
-CREATE_USER_URL = reverse("user:create")
+CREATE_USER_URL = reverse("user:signup")
+LOGIN_USER = reverse("user:login")
 
 
 def create_user(**params):
@@ -17,15 +19,17 @@ class PublicUsersApiTests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
+        self.user = get_user_model().objects.create_user(
+            email="user@gmail.com", password="user", name="user", location="somewhere",
+        )
 
     def test_create_valid_user_success(self):
         """Test creating user with valid payload is successful"""
         payload = {
             "email": "test@gmail.com",
             "password": "password",
-            "first_name": "user",
-            "last_name": "test",
-            "gender": "male",
+            "name": "user",
+            "location": "somewhere",
         }
         res = self.client.post(CREATE_USER_URL, payload)
 
@@ -59,16 +63,73 @@ class PublicUsersApiTests(TestCase):
 
         self.assertFalse(user_exists)
 
-    def test_getting_user_lists(self):
-        """Test all user lists"""
-        res = self.client.get(CREATE_USER_URL)
+    def test_updating_user_info(self):
+        """Test updating user profile info"""
+        GET_USER = reverse("user:get_user", args=[self.user.id])
+        payload = {
+            "email": "testing@gmail.com",
+            "password": "password",
+            "name": "updated user",
+            "gender": "male",
+        }
 
-        self.assertEquals(res.status_code, status.HTTP_200_OK)
-
-    def test_getting_single_user(self):
-        """Test Getting single user by id"""
-        GET_USER = resolve("user:get_user", args=[1], route="get_user<int:id>")
-        print(GET_USER.url_name)
-        res = self.client.get(GET_USER)
+        res = self.client.put(GET_USER, payload)
+        print(res)
+        print(res.data)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertContains(res, "updated user")
+
+    def test_deleting_user_info(self):
+        """Test User account Deletion"""
+        GET_USER = reverse("user:get_user", args=[self.user.id])
+        res = self.client.delete(GET_USER)
+        print(res)
+        print(res.data)
+
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_login_success(self):
+        """Test user login is successfull"""
+        payload = {"email": "user@gmail.com", "password": "user"}
+        res = self.client.post(LOGIN_USER, payload)
+        print(res)
+        print(res.data)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertContains(res, "token")
+
+    def test_login_with_invalid_email(self):
+        """Testing the user with not registered email address"""
+        payload = {"email": "unregisterd@gmail.com", "password": "user"}
+        res = self.client.post(LOGIN_USER, payload)
+        print(res)
+        print(res.data)
+
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_getting_authenticated_user(self):
+        """Test that authentication is required for users"""
+        GET_AUTH_USER = reverse("user:auth_user")
+        res = self.client.get(GET_AUTH_USER)
+
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PublicImageUploadTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+
+    # def test_default_profile_image_is_uploaded(self):
+    #     """Test the default profile image is set for user"""
+    #     payload = {
+    #         "email": "testimage@gmail.com",
+    #         "password": "password",
+    #         "name": "user",
+    #         "location": "somewhere",
+    #     }
+
+    #     res = self.client.post(CREATE_USER_URL, payload)
+
+    #     self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+    #     self.assertIn("image", res.data)

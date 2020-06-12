@@ -1,5 +1,8 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from rest_framework import serializers
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+from rest_framework import status
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -7,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ("email", "password", "first_name", "last_name", "gender")
+        fields = ("email", "password", "name", "location")
         extra_kwargs = {"password": {"write_only": True, "min_length": 8}}
 
     def create(self, validated_data):
@@ -24,3 +27,36 @@ class UserSerializer(serializers.ModelSerializer):
             user.save()
 
         return user
+
+
+class LoginSerializer(serializers.ModelSerializer):
+    """serializer for user login"""
+
+    email = serializers.CharField()
+    password = serializers.CharField(
+        style={"input_type": "password"}, trim_whitespace=False
+    )
+
+    class Meta:
+        model = get_user_model()
+        fields = ("email", "password")
+
+    def validate(self, data):
+        """Validate user data"""
+        user = authenticate(
+            email=data.get("email", None), password=data.get("password", None)
+        )
+
+        if not user:
+            return Response(
+                {"errors": {"Unauthorized": "Invalid Credentials"}},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        if not user.is_active:
+            return Response({"errors": "This user has been deactivated."})
+
+        token, created = Token.objects.get_or_create(user=user)
+        return Response(
+            {"user": {"token": token.key, "name": user.name,}},
+            status=status.HTTP_200_OK,
+        )
