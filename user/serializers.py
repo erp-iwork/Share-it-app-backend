@@ -57,6 +57,9 @@ class LoginSerializer(serializers.ModelSerializer):
 
         token, created = Token.objects.get_or_create(user=user)
         return Response(
-            {"user": {"token": token.key, "name": user.name,}},
+            {
+                "user": {"name": user.name, "location": user.location},
+                "token": token.key,
+            },
             status=status.HTTP_200_OK,
         )
