@@ -15,7 +15,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Create a new user with encrypted password and return it"""
-        return get_user_model().objects.create_user(**validated_data)
+        user = get_user_model().objects.create_user(**validated_data)
+        token, created = Token.objects.get_or_create(user=user)
+        return {
+            "user": {"name": user.name, "location": user.location},
+            "token": token.key,
+        }
 
     def update(self, instance, validated_data):
         """Update a user """
