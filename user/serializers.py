@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.validators import UniqueValidator
 from django.contrib.postgres.fields import JSONField
+from utilities.exception_handler import CustomValidation
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -69,9 +70,8 @@ class LoginSerializer(serializers.ModelSerializer):
         )
 
         if not user:
-            return Response(
-                {"errors": {"error": "Invalid Credentials"}},
-                status=status.HTTP_401_UNAUTHORIZED,
+            raise CustomValidation(
+                "error", "Invalid Credentials", status.HTTP_401_UNAUTHORIZED
             )
 
         token, created = Token.objects.get_or_create(user=user)
