@@ -10,7 +10,7 @@ from django.contrib.postgres.fields import JSONField
 class UserSerializer(serializers.ModelSerializer):
     """serializer for the users objects"""
 
-    email = serializers.CharField(
+    email = serializers.EmailField(
         write_only=True,
         validators=[
             UniqueValidator(
@@ -53,7 +53,7 @@ class UserSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.ModelSerializer):
     """serializer for user login"""
 
-    email = serializers.CharField()
+    email = serializers.EmailField()
     password = serializers.CharField(
         style={"input_type": "password"}, trim_whitespace=False
     )
@@ -70,11 +70,9 @@ class LoginSerializer(serializers.ModelSerializer):
 
         if not user:
             return Response(
-                {"errors": {"Unauthorized": "Invalid Credentials"}},
+                {"errors": {"error": "Invalid Credentials"}},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
-        if not user.is_active:
-            return Response({"errors": "This user has been deactivated."})
 
         token, created = Token.objects.get_or_create(user=user)
         return Response(

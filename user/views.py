@@ -2,6 +2,7 @@ from rest_framework import generics, authentication, permissions
 from user.serializers import UserSerializer, LoginSerializer
 from django.contrib.auth import get_user_model
 from rest_framework.response import Response
+from rest_framework import status
 
 
 class SignupUserView(generics.CreateAPIView):
@@ -32,10 +33,8 @@ class LoginAPIView(generics.CreateAPIView):
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             return serializer.validated_data
-        else:
-            return Response({"errors": serializer.errors}, status=403)
 
 
 class AuthUserAPIView(generics.RetrieveAPIView):
