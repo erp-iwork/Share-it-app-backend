@@ -107,6 +107,10 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
+REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": "utilities.exception_handler.custom_exception_handler"
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
@@ -125,12 +129,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_TMP = os.path.join(BASE_DIR, "static")
-STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+# STATIC_TMP = os.path.join(BASE_DIR, "static")
+# STATIC_URL = "/static/"
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
-os.makedirs(STATIC_TMP, exist_ok=True)
-os.makedirs(STATIC_ROOT, exist_ok=True)
+# os.makedirs(STATIC_TMP, exist_ok=True)
+# os.makedirs(STATIC_ROOT, exist_ok=True)
 
 
 CORS_ORIGIN_ALLOW_ALL = True
