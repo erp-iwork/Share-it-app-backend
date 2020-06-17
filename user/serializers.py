@@ -3,13 +3,21 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.validators import UniqueValidator
 from django.contrib.postgres.fields import JSONField
 
 
 class UserSerializer(serializers.ModelSerializer):
     """serializer for the users objects"""
 
-    email = serializers.CharField(write_only=True)
+    email = serializers.CharField(
+        write_only=True,
+        validators=[
+            UniqueValidator(
+                queryset=get_user_model().objects.all(), message="email already exists"
+            )
+        ],
+    )
     password = serializers.CharField(write_only=True)
     name = serializers.CharField(write_only=True)
     location = serializers.CharField(write_only=True)
