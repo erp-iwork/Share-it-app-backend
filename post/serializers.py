@@ -46,12 +46,7 @@ class ItemSerializer(serializers.ModelSerializer):
             # Create item or product
             item = ItemModel.objects.create(**validated_data)
         except Exception as e:
-            print(e.args)
-            raise CustomValidation(
-                "image",
-                "There is a problem of saving an item, please try again",
-                status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+            raise CustomValidation()
 
         # Iterate and create images for using an item instance
         for i in self.context.get("request").FILES.values():
