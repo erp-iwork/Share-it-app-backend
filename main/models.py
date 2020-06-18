@@ -94,7 +94,7 @@ class ItemModel(models.Model):
     updated_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.item_title
+        return self.title  # fix this in develop as well
 
 
 class ItemImageModel(models.Model):
