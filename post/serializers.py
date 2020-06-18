@@ -7,6 +7,12 @@ from user.serializers import UserSerializer
 from rest_framework import status
 
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = "__all__"
+
+
 class ItemImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemImageModel
