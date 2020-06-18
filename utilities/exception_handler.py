@@ -2,6 +2,7 @@ from django.utils.encoding import force_text
 from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework.views import exception_handler
+from rest_framework.response import Response
 
 #
 class CustomValidation(APIException):
@@ -32,5 +33,7 @@ def custom_exception_handler(exc, context):
         data = response.data
         response.data = {}
         response.data["errors"] = data
+    # else:
+    #     return Response({"errors": {"detail": ["There is a problem in our backend"]}})
 
     return response
