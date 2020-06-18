@@ -1,10 +1,10 @@
-from django.contrib.auth import get_user_model, authenticate
-from rest_framework import serializers
+from django.contrib.auth import authenticate, get_user_model
+from django.contrib.postgres.fields import JSONField
+from main.models import User
+from rest_framework import serializers, status
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.validators import UniqueValidator
-from django.contrib.postgres.fields import JSONField
 from utilities.exception_handler import CustomValidation
 from main.models import User
 

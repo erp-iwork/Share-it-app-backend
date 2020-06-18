@@ -1,8 +1,7 @@
-from rest_framework import generics, authentication, permissions
-from user.serializers import UserSerializer, LoginSerializer
 from django.contrib.auth import get_user_model
+from rest_framework import authentication, generics, permissions, status
 from rest_framework.response import Response
-from rest_framework import status
+from user.serializers import LoginSerializer, UserSerializer
 
 
 class SignupUserView(generics.CreateAPIView):
