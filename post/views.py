@@ -3,8 +3,16 @@ from rest_framework.response import Response
 from utilities.exception_handler import CustomValidation
 from utilities.permission import IsAuthenticatedOrReadOnly
 
-from main.models import ItemImageModel, ItemModel
-from .serializers import ItemSerializer
+from main.models import ItemImageModel, ItemModel, Category
+from .serializers import ItemSerializer, CategorySerializer
+
+# Add or post item api view with multiple images
+class CategoryList(generics.ListAPIView):
+    """Allow to post item only authenticated user"""
+
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    # lookup_field = "category_id"
 
 
 # Add or post item api view with multiple images
