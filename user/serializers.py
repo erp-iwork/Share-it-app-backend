@@ -27,7 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ("email", "password", "name", "location", "user", "token")
+        fields = ("id", "email", "password", "name", "location", "user", "token")
         extra_kwargs = {"password": {"write_only": True, "min_length": 8}}
 
     def create(self, validated_data):
@@ -35,7 +35,7 @@ class UserSerializer(serializers.ModelSerializer):
         user = get_user_model().objects.create_user(**validated_data)
         token, created = Token.objects.get_or_create(user=user)
         return {
-            "user": {"name": user.name, "location": user.location},
+            "user": {"id": user.id, "name": user.name, "location": user.location},
             "token": token.key,
         }
 
@@ -71,13 +71,13 @@ class LoginSerializer(serializers.ModelSerializer):
 
         if not user:
             raise CustomValidation(
-                "error", "Invalid Credentials", status.HTTP_401_UNAUTHORIZED
+                "detail", "Invalid Credentials", status.HTTP_401_UNAUTHORIZED
             )
 
         token, created = Token.objects.get_or_create(user=user)
         return Response(
             {
-                "user": {"name": user.name, "location": user.location},
+                "user": {"id": user.id, "name": user.name, "location": user.location},
                 "token": token.key,
             },
             status=status.HTTP_200_OK,
