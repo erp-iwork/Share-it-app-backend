@@ -11,6 +11,12 @@ class SignupUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
     queryset = get_user_model().objects.all()
 
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            user = serializer.save()
+            return Response(user)
+
 
 class UpdateDeleteUserView(generics.RetrieveUpdateDestroyAPIView):
     """Update, Delete signup user info"""

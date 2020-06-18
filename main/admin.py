@@ -22,7 +22,11 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.ItemImageModel)
+admin.site.register(models.ItemModel)
+admin.site.register(models.Category)
 admin.site.unregister(Group)
+
 admin.site.site_header = "Share it admin page"
 admin.site.site_title = "Share it admin area"
 admin.site.index_title = "Share it administration"

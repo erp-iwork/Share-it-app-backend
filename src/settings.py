@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "user",
     "main",
+    "post",
 ]
 
 MIDDLEWARE = [
@@ -108,7 +109,11 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 REST_FRAMEWORK = {
-    "EXCEPTION_HANDLER": "utilities.exception_handler.custom_exception_handler"
+    "EXCEPTION_HANDLER": "utilities.exception_handler.custom_exception_handler",
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.TokenAuthentication",
+    ),
 }
 
 
