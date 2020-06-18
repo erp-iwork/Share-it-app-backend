@@ -1,34 +1,23 @@
-from django.contrib.auth import get_user_model, authenticate
-from rest_framework import serializers
+from django.contrib.auth import authenticate, get_user_model
+from django.contrib.postgres.fields import JSONField
+from main.models import User
+from rest_framework import serializers, status
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.validators import UniqueValidator
-from django.contrib.postgres.fields import JSONField
 from utilities.exception_handler import CustomValidation
 
 
 class UserSerializer(serializers.ModelSerializer):
     """serializer for the users objects"""
 
-    email = serializers.EmailField(
-        write_only=True,
-        validators=[
-            UniqueValidator(
-                queryset=get_user_model().objects.all(), message="email already exists"
-            )
-        ],
-    )
-    password = serializers.CharField(write_only=True)
-    name = serializers.CharField(write_only=True)
-    location = serializers.CharField(write_only=True)
-    user = serializers.JSONField(read_only=True)
-    token = serializers.CharField(read_only=True)
-
     class Meta:
-        model = get_user_model()
-        fields = ("id", "email", "password", "name", "location", "user", "token")
-        extra_kwargs = {"password": {"write_only": True, "min_length": 8}}
+        model = User
+        fields = ("id", "email", "password", "name", "location")
+        extra_kwargs = {
+            "password": {"write_only": True, "min_length": 8},
+            "id": {"read_only": True},
+        }
 
     def create(self, validated_data):
         """Create a new user with encrypted password and return it"""

@@ -1,10 +1,14 @@
-from rest_framework import serializers
+from main.models import Category, ItemImageModel, ItemModel, User
+from rest_framework import serializers, status
+from user.serializers import UserSerializer
 from utilities.exception_handler import CustomValidation
 from utilities.image_validation import validate_image
-from main.models import ItemImageModel, ItemModel, Category
-from main.models import User
-from user.serializers import UserSerializer
-from rest_framework import status
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = "__all__"
 
 
 class ItemImageSerializer(serializers.ModelSerializer):
@@ -46,12 +50,7 @@ class ItemSerializer(serializers.ModelSerializer):
             # Create item or product
             item = ItemModel.objects.create(**validated_data)
         except Exception as e:
-            print(e.args)
-            raise CustomValidation(
-                "image",
-                "There is a problem of saving an item, please try again",
-                status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+            raise CustomValidation()
 
         # Iterate and create images for using an item instance
         for i in self.context.get("request").FILES.values():

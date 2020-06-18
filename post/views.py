@@ -1,15 +1,22 @@
+import json
+
+from django_filters import rest_framework as filters
+from main.models import Category, ItemImageModel, ItemModel
 from rest_framework import authentication, generics, permissions, status
 from rest_framework.response import Response
 from utilities.exception_handler import CustomValidation
 from utilities.permission import IsAuthenticatedOrReadOnly
 
-from main.models import ItemImageModel, ItemModel, Category
-from .serializers import ItemSerializer, CategorySerializer
-from django_filters import rest_framework as filters
-import json
+from .serializers import CategorySerializer, ItemSerializer
 
 
-# Add or post item api view with multiple images
+class CategoryList(generics.ListAPIView):
+    """Return all categories"""
+
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
 class ItemListAdd(generics.ListCreateAPIView):
     """
     Allow to post item only authenticated user

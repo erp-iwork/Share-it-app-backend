@@ -1,14 +1,11 @@
-from django.db import models
-from django.contrib.postgres.fields import JSONField
-from django.conf import settings
-from datetime import datetime
 import uuid
-from django.contrib.auth.models import (
-    UserManager,
-    BaseUserManager,
-    PermissionsMixin,
-    AbstractBaseUser,
-)
+from datetime import datetime
+
+from django.conf import settings
+from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
+                                        PermissionsMixin, UserManager)
+from django.contrib.postgres.fields import JSONField
+from django.db import models
 
 
 class UserManager(BaseUserManager):
@@ -94,7 +91,7 @@ class ItemModel(models.Model):
     updated_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.title  # fix this in develop as well
+        return self.title
 
 
 class ItemImageModel(models.Model):
