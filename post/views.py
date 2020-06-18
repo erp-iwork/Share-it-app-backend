@@ -19,7 +19,7 @@ class CategoryList(generics.ListAPIView):
 class ItemListAdd(generics.ListCreateAPIView):
     """Allow to post item only authenticated user"""
 
-#     permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     queryset = ItemModel.objects.all()
     serializer_class = ItemSerializer
