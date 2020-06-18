@@ -17,18 +17,6 @@ class CategoryList(generics.ListAPIView):
     serializer_class = CategorySerializer
 
 
-from main.models import ItemImageModel, ItemModel, Category
-from .serializers import ItemSerializer, CategorySerializer
-
-# Add or post item api view with multiple images
-class CategoryList(generics.ListAPIView):
-    """Allow to post item only authenticated user"""
-
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    # lookup_field = "category_id"
-
-
 class ItemListAdd(generics.ListCreateAPIView):
     """
     Allow to post item only authenticated user

@@ -8,9 +8,9 @@ app_name = "post"
 urlpatterns = [
     path("item/", views.ItemListAdd.as_view(), name="item_add_list"),
     path("item/<str:itemId>/", views.ItemRUD.as_view(), name="item_rud"),
-    path("my-items/", views.UserItemList.as_view(), name="my_items"),
+    path("my_items/", views.UserItemList.as_view(), name="my_items"),
     path("items", views.ItemFilterView.as_view(), name="category_items"),
-    path("item-property", views.PropertyFilterView.as_view(), name="properties_items"),
+    path("item_property", views.PropertyFilterView.as_view(), name="properties_items"),
     path("category/", views.CategoryList.as_view(), name="category"),
 ]
 # Adding static files

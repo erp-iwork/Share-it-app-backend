@@ -11,22 +11,11 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = "__all__"
-
-
 class ItemImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemImageModel
         fields = ("imageId", "image")
 
-
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = "__all__"
 
 
 class ItemSerializer(serializers.ModelSerializer):
