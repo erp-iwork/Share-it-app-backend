@@ -6,6 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.validators import UniqueValidator
 from utilities.exception_handler import CustomValidation
+from main.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
