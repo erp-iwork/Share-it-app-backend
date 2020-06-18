@@ -6,6 +6,7 @@ from rest_framework import authentication, generics, permissions, status
 from rest_framework.response import Response
 from utilities.exception_handler import CustomValidation
 from utilities.permission import IsAuthenticatedOrReadOnly
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 from .serializers import CategorySerializer, ItemSerializer
 
@@ -85,7 +86,14 @@ class ItemFilterView(generics.ListAPIView):
 
     queryset = ItemModel.objects.all()
     serializer_class = ItemSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        SearchFilter,
+        OrderingFilter,
+    )
+    search_fields = ["title"]
+    ordering_fields = ["created_at", "title", "updated_at"]
+    ordering = ["created_at"]
     filterset_class = ItemFilter
 
 
