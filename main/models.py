@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
+from django.contrib.gis.db.models import PointField
+
 from django.conf import settings
 from datetime import datetime
 import uuid
@@ -80,7 +82,7 @@ class ItemModel(models.Model):
     itemId = models.UUIDField(
         primary_key=True, null=False, default=uuid.uuid4, editable=False
     )
-    location = models.CharField(max_length=255)
+    location = PointField()
     price = models.FloatField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     boost = models.BooleanField(default=False)
@@ -94,7 +96,7 @@ class ItemModel(models.Model):
     updated_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.item_title
+        return self.title
 
 
 class ItemImageModel(models.Model):
