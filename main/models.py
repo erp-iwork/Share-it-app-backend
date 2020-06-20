@@ -5,12 +5,17 @@ from django.contrib.gis.db.models import PointField
 from django.conf import settings
 from datetime import datetime
 import uuid
+from datetime import datetime
+
+from django.conf import settings
 from django.contrib.auth.models import (
-    UserManager,
+    AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
-    AbstractBaseUser,
+    UserManager,
 )
+from django.contrib.postgres.fields import JSONField
+from django.db import models
 
 
 class UserManager(BaseUserManager):

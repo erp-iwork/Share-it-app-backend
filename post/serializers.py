@@ -1,10 +1,8 @@
-from rest_framework import serializers
+from main.models import Category, ItemImageModel, ItemModel, User
+from rest_framework import serializers, status
+from user.serializers import UserSerializer
 from utilities.exception_handler import CustomValidation
 from utilities.image_validation import validate_image
-from main.models import ItemImageModel, ItemModel, Category
-from main.models import User
-from user.serializers import UserSerializer
-from rest_framework import status
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -18,11 +16,6 @@ class ItemImageSerializer(serializers.ModelSerializer):
         model = ItemImageModel
         fields = ("imageId", "image")
 
-
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = "__all__"
 
 
 class ItemSerializer(serializers.ModelSerializer):
