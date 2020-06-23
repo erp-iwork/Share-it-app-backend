@@ -52,7 +52,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
-    location = models.CharField(max_length=100, blank=True, null=True)
+    zip_code = models.CharField(max_length=255)
+    location = PointField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
@@ -87,7 +88,7 @@ class ItemModel(models.Model):
     itemId = models.UUIDField(
         primary_key=True, null=False, default=uuid.uuid4, editable=False
     )
-    location = PointField()
+    location = PointField(null=True, blank=True)
     zip_code = models.CharField(max_length=255)
     price = models.FloatField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -98,6 +99,7 @@ class ItemModel(models.Model):
     condition = models.CharField(max_length=255)
     description = models.TextField()
     properties = JSONField()
+    is_donating = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
