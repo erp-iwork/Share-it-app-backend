@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from user.serializers import LoginSerializer, UserSerializer
 
 
-class SignupUserView(generics.CreateAPIView):
+class SignupUserView(generics.ListCreateAPIView):
     """Create a new user in the system"""
 
     serializer_class = UserSerializer
