@@ -3,6 +3,7 @@ from rest_framework import serializers, status
 from user.serializers import UserSerializer
 from utilities.exception_handler import CustomValidation
 from utilities.image_validation import validate_image
+from drf_extra_fields.geo_fields import PointField
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -17,13 +18,13 @@ class ItemImageSerializer(serializers.ModelSerializer):
         fields = ("imageId", "image")
 
 
-
 class ItemSerializer(serializers.ModelSerializer):
     item_images = ItemImageSerializer(many=True, read_only=True)
     owner = UserSerializer(read_only=True)
     owner_id = serializers.CharField(write_only=True)
     category = CategorySerializer(read_only=True)
     category_id = serializers.CharField(write_only=True)
+    location = PointField(write_only=True, allow_null=True)
 
     class Meta:
         model = ItemModel

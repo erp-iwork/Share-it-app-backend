@@ -88,6 +88,7 @@ class ItemModel(models.Model):
         primary_key=True, null=False, default=uuid.uuid4, editable=False
     )
     location = PointField()
+    zip_code = models.CharField(max_length=255)
     price = models.FloatField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     boost = models.BooleanField(default=False)
