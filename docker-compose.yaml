@@ -19,14 +19,14 @@ services:
       - db
 
   db:
-    image: mdillon/postgis:9.6
+    image: mdillon/postgis:9.5
     environment:
       - POSTGRES_DB=Share_it_db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=root
       - POSTGRES_HOST_AUTH_METHOD=trust   
     ports:
-      - "8080:8080"   
+      - "8080:8080"  
 
   pgadmin:
     image: dpage/pgadmin4
