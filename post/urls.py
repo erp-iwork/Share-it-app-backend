@@ -12,6 +12,7 @@ urlpatterns = [
     path("items", views.ItemFilterView.as_view(), name="category_items"),
     path("item_property", views.PropertyFilterView.as_view(), name="properties_items"),
     path("category/", views.CategoryList.as_view(), name="category"),
+    path("trans_history/", views.TransactionList.as_view(), name="transaction_history"),
 ]
 # Adding static files
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

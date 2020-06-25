@@ -54,7 +54,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     zip_code = models.CharField(max_length=255)
     location = PointField(null=True, blank=True)
-    image = models.ImageField(upload_to="media/profile_pics", default="no-img.png")
+    image = models.ImageField(
+        upload_to="media/profile_pics", default="no-img.png", blank=True, null=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
@@ -78,6 +80,10 @@ def upload_path(instance, filename):
 
 
 class Category(models.Model):
+    """
+    Item category model
+    """
+
     category = models.CharField(max_length=255)
     sub_category = models.CharField(max_length=255)
 
@@ -120,4 +126,43 @@ class ItemImageModel(models.Model):
     updated_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.imageId
+        return str(self.imageId)
+
+
+class Follow(models.Model):
+    """
+    User Followers and following
+    """
+
+    follower = models.ForeignKey(
+        User, related_name="followers", on_delete=models.CASCADE
+    )  # The person following
+    following = models.ForeignKey(
+        User, related_name="following", on_delete=models.CASCADE
+    )  # The person to be followed
+    follow_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("follower", "following")
+        ordering = ["-follow_time"]
+
+    def __unicode__(self):
+        return str(self.follow_time)
+
+    def __str__(self):
+        f"{self.follower} follows {self.following}"
+
+
+class SharingStatus(models.Model):
+    """
+    tracks shared and sharing items
+    """
+
+    transaction_type = models.CharField(max_length=255,)
+    item = models.ForeignKey(ItemModel, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    transaction_time = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.transaction_type
+

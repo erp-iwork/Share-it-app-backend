@@ -1,4 +1,4 @@
-from main.models import Category, ItemImageModel, ItemModel, User
+from main.models import Category, ItemImageModel, ItemModel, User, SharingStatus
 from rest_framework import serializers, status
 from user.serializers import UserSerializer
 from utilities.exception_handler import CustomValidation
@@ -45,7 +45,13 @@ class ItemSerializer(serializers.ModelSerializer):
         try:
             # Create item or product
             item = ItemModel.objects.create(**validated_data)
+            user = self.context.get("request").user
+            transaction = SharingStatus.objects.create(
+                transaction_type="Sharing", user=user, item=item
+            )
+
         except Exception as e:
+            print(e)
             raise CustomValidation()
 
         # Iterate and create images for using an item instance
@@ -61,3 +67,27 @@ class ItemSerializer(serializers.ModelSerializer):
                 )
 
         return item
+
+
+class ItemhistorySerializer(serializers.ModelSerializer):
+    """
+    serializer that gives selling item title and itemId
+    """
+
+    class Meta:
+        model = ItemModel
+        fields = ("itemId", "title")
+
+
+class TransactionSerializer(serializers.ModelSerializer):
+    """
+    serializers for user postign itme serializer
+    """
+
+    item = ItemhistorySerializer(read_only=True)
+
+    class Meta:
+        model = SharingStatus
+        fields = ("transaction_type", "item", "user", "transaction_time")
+        write_only_fields = "user"
+
