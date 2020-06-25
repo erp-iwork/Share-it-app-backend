@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import authentication, generics, permissions, status
 from rest_framework.response import Response
-from user.serializers import LoginSerializer, UserSerializer
+from user.serializers import LoginSerializer, UserSerializer, FollowSerializer
+from main.models import Follow
 
 
 class SignupUserView(generics.ListCreateAPIView):
@@ -52,3 +53,38 @@ class AuthUserAPIView(generics.RetrieveAPIView):
     def get_object(self):
         """Retrieve and return authentication user"""
         return self.request.user
+
+
+class FollowAPIView(generics.CreateAPIView):
+    """
+    View that hanldes user followers and followings
+    """
+
+    serializer_class = FollowSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        data = {
+            "follower": self.request.user.id,
+            "following": request.data["following"],
+        }
+        serializer = FollowSerializer(data=data)
+        if serializer.is_valid(raise_exception=True):
+            return serializer.validated_data
+
+
+class UnfollowAPIView(generics.RetrieveAPIView):
+    """
+    View that hanldes user followers and followings
+    """
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = FollowSerializer
+    queryset = Follow.objects.all()
+    lookup_field = "following"
+
+    def delete(self, request, following=None):
+        return self.destroy(request, following)  # send custom deletion success message
+
