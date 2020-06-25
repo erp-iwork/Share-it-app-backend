@@ -54,6 +54,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     zip_code = models.CharField(max_length=255)
     location = PointField(null=True, blank=True)
+    image = models.ImageField(upload_to="media/profile_pics", default="no-img.png")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)

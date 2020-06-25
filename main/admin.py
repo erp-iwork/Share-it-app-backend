@@ -12,7 +12,7 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ("updated_at",)
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        (_("Personal Info"), {"fields": ("name", "location")}),
+        (_("Personal Info"), {"fields": ("name", "image", "location")}),
         (_("Permissions"), {"fields": ("is_active", "is_staff", "is_superuser")}),
         (_("Important_dates"), {"fields": ("last_login",)}),
     )
@@ -25,6 +25,8 @@ admin.site.register(models.User, UserAdmin)
 admin.site.register(models.ItemImageModel)
 admin.site.register(models.ItemModel, OSMGeoAdmin)
 admin.site.register(models.Category)
+admin.site.register(models.Follow)
+admin.site.register(models.SharingStatus)
 admin.site.unregister(Group)
 
 admin.site.site_header = "Share it admin page"
