@@ -16,6 +16,9 @@ from django.contrib.auth.models import (
 )
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from model_utils import Choices
+
+RATING = Choices((1, "one"), (2, "two"), (3, "three"), (4, "four"), (5, "five"),)
 
 
 class UserManager(BaseUserManager):
@@ -77,6 +80,33 @@ def upload_path(instance, filename):
     now_string = now.strftime("%d-%m-%Y %H:%M:%S")
     new_filename = now_string + filename
     return "/".join(["post_image", new_filename])
+
+
+class Rating(models.Model):
+    """
+    Rating user on a scale from one to 5
+    """
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_rating")
+    rating = models.PositiveSmallIntegerField(choices=RATING)
+
+    def __str__(self):
+        return f"{self.user} has {self.rating}"
+
+
+class Profile(models.Model):
+    """
+    User Profile model
+    """
+
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="user_profile"
+    )
+    telegram = models.CharField(max_length=255, blank=True, null=True)
+    facebook = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return self.user
 
 
 class Category(models.Model):

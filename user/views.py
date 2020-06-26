@@ -1,7 +1,14 @@
 from django.contrib.auth import get_user_model
 from rest_framework import authentication, generics, permissions, status
 from rest_framework.response import Response
-from user.serializers import LoginSerializer, UserSerializer, FollowSerializer
+from user.serializers import (
+    LoginSerializer,
+    UserSerializer,
+    FollowSerializer,
+    RatingSerializer,
+    ProfileSerializer,
+    AddProfileSerializer,
+)
 from main.models import Follow
 
 
@@ -87,4 +94,44 @@ class UnfollowAPIView(generics.RetrieveAPIView):
 
     def delete(self, request, following=None):
         return self.destroy(request, following)  # send custom deletion success message
+
+
+class RagingAPIView(generics.CreateAPIView):
+    """
+    View to add new rating to the user
+    """
+
+    serializer_class = RatingSerializer
+
+
+class AddProfileInfoAPIView(generics.CreateAPIView):
+    """
+    View to add new rating to the user
+    """
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = AddProfileSerializer
+
+    def post(self, request):
+        data = {
+            "user": self.request.user.id,
+            "telegram": request.data["telegram"],
+            "facebook": request.data["facebook"],
+        }
+        serializer = AddProfileSerializer(data=data)
+        if serializer.is_valid(raise_exception=True):
+            return serializer.validated_data
+
+
+class PrifileAPIView(generics.RetrieveUpdateAPIView):
+    """Retrieve and return authentication user"""
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = ProfileSerializer
+
+    def get_object(self):
+        """Retrieve and return authentication user"""
+        return self.request.user
 

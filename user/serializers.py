@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.postgres.fields import JSONField
-from main.models import User, Follow
+from main.models import User, Follow, Rating, Profile
 from rest_framework import serializers, status
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
@@ -14,10 +14,6 @@ class UserSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(
         max_length=None, use_url=True, allow_null=True, required=False
     )
-    following = serializers.SerializerMethodField()
-    followers = serializers.SerializerMethodField()
-    following_count = serializers.SerializerMethodField()
-    followers_count = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -28,10 +24,6 @@ class UserSerializer(serializers.ModelSerializer):
             "password",
             "name",
             "location",
-            "following",
-            "followers",
-            "following_count",
-            "followers_count",
         )
         extra_kwargs = {
             "password": {"write_only": True, "min_length": 8},
@@ -58,18 +50,6 @@ class UserSerializer(serializers.ModelSerializer):
             user.save()
 
         return user
-
-    def get_following(self, obj):
-        return FollowingSerializer(obj.following.all(), many=True).data
-
-    def get_followers(self, obj):
-        return FollowersSerializer(obj.followers.all(), many=True).data
-
-    def get_following_count(self, instance):
-        return instance.following.count()
-
-    def get_followers_count(self, instance):
-        return instance.followers.count()
 
 
 class LoginSerializer(serializers.ModelSerializer):
@@ -156,4 +136,90 @@ class FollowSerializer(serializers.ModelSerializer):
             {"follow": f"You are now following {data.following}"},
             status=status.HTTP_200_OK,
         )
+
+
+class RatingSerializer(serializers.ModelSerializer):
+    """
+    add new user rating serializer
+    """
+
+    class Meta:
+        model = Rating
+        fields = "__all__"
+
+
+class AddProfileSerializer(serializers.ModelSerializer):
+    """
+    serializer used to add new profile data for user
+    """
+
+    class Meta:
+        model = Profile
+        fields = "__all__"
+
+    def validate(self, data):
+        """
+        validate self follow
+        """
+        data = Profile.objects.create(**data)
+        return Response(
+            {"profile": f"Profile updated successfully"}, status=status.HTTP_200_OK,
+        )
+
+    def update(self, instance, validated_data):
+        """
+        update user profile data
+        """
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    """
+    user profile detials which include folowing follower and rating count (0-5)
+    """
+
+    following = serializers.SerializerMethodField()
+    followers = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
+    followers_count = serializers.SerializerMethodField()
+    rating_count = serializers.SerializerMethodField()
+    user_profile = AddProfileSerializer(read_only=True)
+    name = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = (
+            "name",
+            "image",
+            "location",
+            "user_profile",
+            "following",
+            "followers",
+            "following_count",
+            "followers_count",
+            "rating_count",
+        )
+
+    def get_following(self, obj):
+        return FollowingSerializer(obj.following.all(), many=True).data
+
+    def get_followers(self, obj):
+        return FollowersSerializer(obj.followers.all(), many=True).data
+
+    def get_following_count(self, instance):
+        return instance.following.count()
+
+    def get_followers_count(self, instance):
+        return instance.followers.count()
+
+    def get_rating_count(self, instance):
+        ratings = Rating.objects.filter(user=instance)
+        rate = 0
+        count = 0
+        for rating in ratings:
+            rate += rating.rating
+            count += 1
+        if count == 0:
+            return 0
+        else:
+            return rate / count
 
