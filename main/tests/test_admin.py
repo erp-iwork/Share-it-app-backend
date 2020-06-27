@@ -12,7 +12,7 @@ class AdminSiteTests(TestCase):
         )
         self.client.force_login(self.admin_user)
         self.user = get_user_model().objects.create_user(
-            email="user@gmail.com", password="user", name="user", location="somewhere",
+            email="user@gmail.com", password="user", name="user"
         )
 
     def test_users_listed(self):
