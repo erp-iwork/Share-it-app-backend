@@ -13,9 +13,6 @@ from user.serializers import (
 from main.models import Follow
 
 
-from django.contrib.gis.geoip2 import GeoIP2
-
-
 class SignupUserView(generics.CreateAPIView):
     """Create a new user in the system"""
 
@@ -127,10 +124,6 @@ class AddProfileInfoAPIView(generics.CreateAPIView):
             "facebook": request.data["facebook"],
         }
 
-        g = GeoIP2()
-        g.country(ip)
-        g.country("google.com")
-
         serializer = AddProfileSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             return serializer.validated_data
@@ -148,11 +141,11 @@ class PrifileAPIView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
-def get_client_ip(request):
-    if "HTTP_X_FORWARDED_FOR" in request.META:
-        x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
-        ip = x_forwarded_for.split(",")[0]
-    else:
-        ip = request.META.get("REMOTE_ADDR")
-    return ip
+# def get_client_ip(request):
+#     if "HTTP_X_FORWARDED_FOR" in request.META:
+#         x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+#         ip = x_forwarded_for.split(",")[0]
+#     else:
+#         ip = request.META.get("REMOTE_ADDR")
+#     return ip
 
