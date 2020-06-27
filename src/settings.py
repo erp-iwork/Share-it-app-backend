@@ -47,7 +47,9 @@ INSTALLED_APPS = [
     "corsheaders",
     "user",
     "main",
+    "chat",
     "post",
+    "channels",
     "django_filters",
 ]
 
@@ -79,8 +81,6 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = "src.wsgi.application"
 
 
 # Database
@@ -170,4 +170,14 @@ CORS_ORIGIN_ALLOW_ALL = True
 # ]
 
 AUTH_USER_MODEL = "main.User"
+# WSGI_APPLICATION = "src.wsgi.application"
+ASGI_APPLICATION = "chat.routing.application"
+
+REDIS_HOST = os.environ.get("REDIS_HOST")
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [("redis", 6379)],},
+    },
+}
 django_heroku.settings(locals())

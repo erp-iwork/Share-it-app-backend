@@ -114,9 +114,30 @@ class ItemImageModel(models.Model):
     item = models.ForeignKey(
         ItemModel, related_name="item_images", on_delete=models.CASCADE
     )
-    image = models.FileField(null=False, blank=False, upload_to=upload_path)
+    image = models.ImageField(null=False, blank=False, upload_to=upload_path)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.imageId
+
+
+class Message(models.Model):
+    id = models.UUIDField(
+        primary_key=True, null=False, default=uuid.uuid4, editable=False
+    )
+    sender = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="sender_user"
+    )
+    receiver = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="receiver_user"
+    )
+    message = models.CharField(max_length=1200)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.message
+
+    class Meta:
+        ordering = ("timestamp",)
