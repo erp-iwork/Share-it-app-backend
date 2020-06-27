@@ -154,7 +154,7 @@ class ItemModel(models.Model):
     condition = models.CharField(max_length=255)
     description = models.TextField()
     term_and_conditions = models.TextField()
-    properties = JSONField()
+    properties = JSONField(blank=True, null=True)
     is_donating = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
