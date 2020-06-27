@@ -16,6 +16,9 @@ from django.contrib.auth.models import (
 )
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from model_utils import Choices
+
+RATING = Choices((1, "one"), (2, "two"), (3, "three"), (4, "four"), (5, "five"),)
 
 
 class UserManager(BaseUserManager):
@@ -54,6 +57,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     zip_code = models.CharField(max_length=255)
     location = PointField(null=True, blank=True)
+    image = models.ImageField(
+        upload_to="media/profile_pics", default="no-img.png", blank=True, null=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
@@ -76,52 +82,6 @@ def upload_path(instance, filename):
     return "/".join(["post_image", new_filename])
 
 
-class Category(models.Model):
-    category = models.CharField(max_length=255)
-    sub_category = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.category
-
-
-class ItemModel(models.Model):
-    itemId = models.UUIDField(
-        primary_key=True, null=False, default=uuid.uuid4, editable=False
-    )
-    location = PointField(null=True, blank=True)
-    zip_code = models.CharField(max_length=255)
-    price = models.FloatField()
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    boost = models.BooleanField(default=False)
-    is_available = models.BooleanField(default=True)
-    owner = models.ForeignKey(User, related_name="post_owner", on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
-    condition = models.CharField(max_length=255)
-    description = models.TextField()
-    properties = JSONField(blank=True, null=True)
-    is_donating = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.title
-
-
-class ItemImageModel(models.Model):
-    imageId = models.UUIDField(
-        primary_key=True, null=False, default=uuid.uuid4, editable=False
-    )
-    item = models.ForeignKey(
-        ItemModel, related_name="item_images", on_delete=models.CASCADE
-    )
-    image = models.ImageField(null=False, blank=False, upload_to=upload_path)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.imageId
-
-
 class Message(models.Model):
     id = models.UUIDField(
         primary_key=True, null=False, default=uuid.uuid4, editable=False
@@ -141,3 +101,137 @@ class Message(models.Model):
 
     class Meta:
         ordering = ("timestamp",)
+
+
+class Rating(models.Model):
+    """
+    Rating user on a scale from one to 5
+    """
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_rating")
+    rating = models.PositiveSmallIntegerField(choices=RATING)
+
+    def __str__(self):
+        return f"{self.user} has {self.rating}"
+
+
+class Profile(models.Model):
+    """
+    User Profile model
+    """
+
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="user_profile"
+    )
+    telegram = models.CharField(max_length=255, blank=True, null=True)
+    facebook = models.CharField(max_length=255, blank=True, null=True)
+    phonenumber = models.IntegerField(blank=True, null=True)
+    website = models.CharField(max_length=255, blank=True, null=True)
+    whatsapp = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return self.user
+
+
+class Category(models.Model):
+    """
+    Item category model
+    """
+
+    category = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.category
+
+
+class SubCategory(models.Model):
+    """
+    Item sub_category model
+    """
+
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, related_name="parent_category"
+    )
+    sub_category = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.sub_category
+
+
+class ItemModel(models.Model):
+    itemId = models.UUIDField(
+        primary_key=True, null=False, default=uuid.uuid4, editable=False
+    )
+    location = PointField(null=True, blank=True)
+    zip_code = models.CharField(max_length=255)
+    price = models.FloatField()
+    sub_category = models.ForeignKey(
+        SubCategory, on_delete=models.CASCADE, related_name="item_sub_category"
+    )
+    boost = models.BooleanField(default=False)
+    is_available = models.BooleanField(default=True)
+    owner = models.ForeignKey(User, related_name="post_owner", on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    condition = models.CharField(max_length=255)
+    description = models.TextField()
+    term_and_conditions = models.TextField()
+    properties = JSONField(blank=True, null=True)
+    is_donating = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+
+class ItemImageModel(models.Model):
+    imageId = models.UUIDField(
+        primary_key=True, null=False, default=uuid.uuid4, editable=False
+    )
+    item = models.ForeignKey(
+        ItemModel, related_name="item_images", on_delete=models.CASCADE
+    )
+    image = models.FileField(null=False, blank=False, upload_to=upload_path)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.imageId)
+
+
+class Follow(models.Model):
+    """
+    User Followers and following
+    """
+
+    follower = models.ForeignKey(
+        User, related_name="followers", on_delete=models.CASCADE
+    )  # The person following
+    following = models.ForeignKey(
+        User, related_name="following", on_delete=models.CASCADE
+    )  # The person to be followed
+    follow_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("follower", "following")
+        ordering = ["-follow_time"]
+
+    def __unicode__(self):
+        return str(self.follow_time)
+
+    def __str__(self):
+        return f"{self.follower} follows {self.following}"
+
+
+class SharingStatus(models.Model):
+    """
+    tracks shared and sharing items
+    """
+
+    transaction_type = models.CharField(max_length=255,)
+    item = models.ForeignKey(ItemModel, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    transaction_time = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.transaction_type

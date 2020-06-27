@@ -33,7 +33,7 @@ services:
       - REDIS_HOST=redis
       - POSTGRES_HOST_AUTH_METHOD=trust   
     ports:
-      - "8080:8080"   
+      - "8080:8080"  
 
   pgadmin:
     image: dpage/pgadmin4

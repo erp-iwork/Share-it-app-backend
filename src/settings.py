@@ -17,6 +17,7 @@ import django_heroku
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
+# GEOIP_PATH = os.path.join(BASE_DIR, "geoip")
 
 
 # Quick-start development settings - unsuitable for production

@@ -8,9 +8,21 @@ RUN apt-get update && apt-get install   -y \
     libpq-dev\
     binutils \
     libproj-dev \
+<<<<<<< HEAD
     gdal-bin\
     gcc
    
+=======
+    gdal-bin \
+    gcc \
+    libc-dev \
+    libjpeg-dev \
+    zlib1g-dev
+
+
+
+
+>>>>>>> f879c5d8a83e90ccdd18763c909845ac7add9d08
 RUN mkdir /src
 WORKDIR /src
 COPY ./ /src

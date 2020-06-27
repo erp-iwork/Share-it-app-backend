@@ -1,14 +1,21 @@
 import json
 
 from django_filters import rest_framework as filters
-from main.models import Category, ItemImageModel, ItemModel
+from main.models import Category, ItemImageModel, ItemModel, SharingStatus, SubCategory
 from rest_framework import authentication, generics, permissions, status
 from rest_framework.response import Response
 from utilities.exception_handler import CustomValidation
 from utilities.permission import IsAuthenticatedOrReadOnly
 from rest_framework.filters import SearchFilter, OrderingFilter
 
-from .serializers import CategorySerializer, ItemSerializer
+from django.contrib.gis import geoip2
+
+from .serializers import (
+    CategorySerializer,
+    ItemSerializer,
+    TransactionSerializer,
+    SubCategorySerializer,
+)
 
 
 class CategoryList(generics.ListAPIView):
@@ -18,19 +25,33 @@ class CategoryList(generics.ListAPIView):
     serializer_class = CategorySerializer
 
 
+class subCategoryList(generics.ListAPIView):
+    """Return all categories"""
+
+    queryset = SubCategory.objects.all()
+    serializer_class = SubCategorySerializer
+
+
+class TransactionList(generics.ListAPIView):
+    """Return all user transaction history"""
+
+    queryset = SharingStatus.objects.all()
+    serializer_class = TransactionSerializer
+
+
 class ItemListAdd(generics.ListCreateAPIView):
     """
     Allow to post item only authenticated user
     """
 
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     queryset = ItemModel.objects.all()
     serializer_class = ItemSerializer
     lookup_field = "itemId"
 
     def post(self, request):
-        # Passing request of data and the request context for files
         serializer = ItemSerializer(data=request.data, context={"request": request})
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -76,7 +97,7 @@ class ItemFilter(filters.FilterSet):
 
     class Meta:
         model = ItemModel
-        fields = ["category", "min_price", "max_price", "condition"]
+        fields = ["sub_category", "min_price", "max_price", "condition"]
 
 
 class ItemFilterView(generics.ListAPIView):
@@ -106,9 +127,28 @@ class PropertyFilterView(generics.ListAPIView):
     queryset = ItemModel.objects.all()
 
     def get_queryset(self):
-        category = self.request.query_params.get("category", None)
+        sub_category = self.request.query_params.get("sub_category", None)
         property = self.request.query_params.get("property", None)
         property_dict = json.loads(property)
         return ItemModel.objects.filter(
+            sub_category=sub_category, properties__contains=property_dict
+        )
+
+
+class ItemFilterByLocationView(generics.ListAPIView):
+    """
+    Return items filtered by property in a given category
+    """
+
+    serializer_class = ItemSerializer
+    queryset = ItemModel.objects.all()
+
+    def get_queryset(self):
+        category = self.request.query_params.get("category", None)
+        property = self.request.query_params.get("property", None)
+        property_dict = json.loads(property)
+
+        return ItemModel.objects.filter(
             category=category, properties__contains=property_dict
         )
+

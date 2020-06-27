@@ -12,7 +12,7 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ("updated_at",)
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        (_("Personal Info"), {"fields": ("name", "location")}),
+        (_("Personal Info"), {"fields": ("name", "image", "location")}),
         (_("Permissions"), {"fields": ("is_active", "is_staff", "is_superuser")}),
         (_("Important_dates"), {"fields": ("last_login",)}),
     )
