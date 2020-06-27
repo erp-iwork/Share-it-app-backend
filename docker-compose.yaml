@@ -25,7 +25,7 @@ services:
       - redis
 
   db:
-    image: mdillon/postgis:9.6
+    image: mdillon/postgis:9.5
     environment:
       - POSTGRES_DB=Share_it_db
       - POSTGRES_USER=postgres
