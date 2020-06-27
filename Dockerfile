@@ -6,7 +6,13 @@ RUN pip install --upgrade pip
 RUN apt-get update && apt-get install -y \
     binutils \
     libproj-dev \
-    gdal-bin
+    gdal-bin \
+    gcc \
+    libc-dev \
+    libjpeg-dev \
+    zlib1g-dev
+
+
 
 
 RUN mkdir /src
