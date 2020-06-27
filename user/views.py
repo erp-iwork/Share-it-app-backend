@@ -5,6 +5,7 @@ from user.serializers import (
     LoginSerializer,
     UserSerializer,
     FollowSerializer,
+    UnFollowSerializer,
     RatingSerializer,
     ProfileSerializer,
     AddProfileSerializer,
@@ -12,11 +13,13 @@ from user.serializers import (
 from main.models import Follow
 
 
-class SignupUserView(generics.ListCreateAPIView):
+from django.contrib.gis.geoip2 import GeoIP2
+
+
+class SignupUserView(generics.CreateAPIView):
     """Create a new user in the system"""
 
     serializer_class = UserSerializer
-    queryset = get_user_model().objects.all()
 
     def post(self, request):
         serializer = UserSerializer(data=request.data)
@@ -81,19 +84,23 @@ class FollowAPIView(generics.CreateAPIView):
             return serializer.validated_data
 
 
-class UnfollowAPIView(generics.RetrieveAPIView):
+class UnfollowAPIView(generics.CreateAPIView):
     """
     View that hanldes user followers and followings
     """
 
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = FollowSerializer
-    queryset = Follow.objects.all()
-    lookup_field = "following"
+    serializer_class = UnFollowSerializer
 
-    def delete(self, request, following=None):
-        return self.destroy(request, following)  # send custom deletion success message
+    def post(self, request):
+        data = {
+            "follower": self.request.user.id,
+            "following": request.data["following"],
+        }
+        serializer = UnFollowSerializer(data=data)
+        if serializer.is_valid(raise_exception=True):
+            return serializer.validated_data
 
 
 class RagingAPIView(generics.CreateAPIView):
@@ -119,6 +126,11 @@ class AddProfileInfoAPIView(generics.CreateAPIView):
             "telegram": request.data["telegram"],
             "facebook": request.data["facebook"],
         }
+
+        g = GeoIP2()
+        g.country(ip)
+        g.country("google.com")
+
         serializer = AddProfileSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             return serializer.validated_data
@@ -134,4 +146,13 @@ class PrifileAPIView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         """Retrieve and return authentication user"""
         return self.request.user
+
+
+def get_client_ip(request):
+    if "HTTP_X_FORWARDED_FOR" in request.META:
+        x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+        ip = x_forwarded_for.split(",")[0]
+    else:
+        ip = request.META.get("REMOTE_ADDR")
+    return ip
 

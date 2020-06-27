@@ -138,6 +138,27 @@ class FollowSerializer(serializers.ModelSerializer):
         )
 
 
+class UnFollowSerializer(serializers.ModelSerializer):
+    """
+    Follow and UnFollow serializer
+    """
+
+    class Meta:
+        model = Follow
+        fields = "__all__"
+
+    def validate(self, data):
+        """
+        validate self follow
+        """
+        following = data.get("following", None)
+        follower = data.get("follower", None)
+        data = Follow.objects.filter(following=following, follower=follower).delete()
+        return Response(
+            {"follow": f"You unfollow {data.following}"}, status=status.HTTP_200_OK,
+        )
+
+
 class RatingSerializer(serializers.ModelSerializer):
     """
     add new user rating serializer

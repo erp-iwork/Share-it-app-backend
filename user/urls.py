@@ -17,7 +17,7 @@ urlpatterns = [
     ),
     path("user/follow/", views.FollowAPIView.as_view(), name="user_follow"),
     path(
-        "user/unfollow/<int:following>",
+        "user/unfollow/",
         views.UnfollowAPIView.as_view(),
         name="user_unfollow",
     ),
