@@ -1,4 +1,11 @@
-from main.models import Category, ItemImageModel, ItemModel, User, SharingStatus
+from main.models import (
+    Category,
+    ItemImageModel,
+    ItemModel,
+    User,
+    SharingStatus,
+    SubCategory,
+)
 from rest_framework import serializers, status
 from user.serializers import UserSerializer
 from utilities.exception_handler import CustomValidation
@@ -12,6 +19,15 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class SubCategorySerializer(serializers.ModelSerializer):
+    category_id = serializers.CharField(write_only=True)
+    category = CategorySerializer(read_only=True)
+
+    class Meta:
+        model = SubCategory
+        fields = "__all__"
+
+
 class ItemImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemImageModel
@@ -22,9 +38,9 @@ class ItemSerializer(serializers.ModelSerializer):
     item_images = ItemImageSerializer(many=True, read_only=True)
     owner = UserSerializer(read_only=True)
     owner_id = serializers.CharField(write_only=True)
-    category = CategorySerializer(read_only=True)
-    category_id = serializers.CharField(write_only=True)
-    location = PointField(write_only=True, allow_null=True)
+    sub_category_id = serializers.CharField(write_only=True)
+    sub_category = SubCategorySerializer(read_only=True)
+    location = PointField(allow_null=True)
 
     class Meta:
         model = ItemModel

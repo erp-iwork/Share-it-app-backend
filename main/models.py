@@ -104,6 +104,9 @@ class Profile(models.Model):
     )
     telegram = models.CharField(max_length=255, blank=True, null=True)
     facebook = models.CharField(max_length=255, blank=True, null=True)
+    phonenumber = models.IntegerField(blank=True, null=True)
+    website = models.CharField(max_length=255, blank=True, null=True)
+    whatsapp = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.user
@@ -115,10 +118,23 @@ class Category(models.Model):
     """
 
     category = models.CharField(max_length=255)
-    sub_category = models.CharField(max_length=255)
 
     def __str__(self):
         return self.category
+
+
+class SubCategory(models.Model):
+    """
+    Item sub_category model
+    """
+
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, related_name="parent_category"
+    )
+    sub_category = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.sub_category
 
 
 class ItemModel(models.Model):
@@ -128,7 +144,9 @@ class ItemModel(models.Model):
     location = PointField(null=True, blank=True)
     zip_code = models.CharField(max_length=255)
     price = models.FloatField()
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    sub_category = models.ForeignKey(
+        SubCategory, on_delete=models.CASCADE, related_name="item_sub_category"
+    )
     boost = models.BooleanField(default=False)
     is_available = models.BooleanField(default=True)
     owner = models.ForeignKey(User, related_name="post_owner", on_delete=models.CASCADE)
@@ -180,7 +198,7 @@ class Follow(models.Model):
         return str(self.follow_time)
 
     def __str__(self):
-        f"{self.follower} follows {self.following}"
+        return f"{self.follower} follows {self.following}"
 
 
 class SharingStatus(models.Model):
