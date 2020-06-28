@@ -25,6 +25,7 @@ admin.site.register(models.User, UserAdmin)
 admin.site.register(models.ItemImageModel)
 admin.site.register(models.ItemModel, OSMGeoAdmin)
 admin.site.register(models.Category)
+admin.site.register(models.SubCategory)
 admin.site.register(models.Message)
 admin.site.unregister(Group)
 
