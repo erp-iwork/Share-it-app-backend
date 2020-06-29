@@ -138,10 +138,10 @@ class Category(models.Model):
     Item category model
     """
 
-    category = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
-        return self.category
+        return self.name
 
 
 class SubCategory(models.Model):
@@ -149,13 +149,12 @@ class SubCategory(models.Model):
     Item sub_category model
     """
 
-    category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, related_name="parent_category"
-    )
-    sub_category = models.CharField(max_length=255)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    icon = models.ImageField(upload_to="media/sub_category_icons")
+    name = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.sub_category
+        return self.name
 
 
 class ItemModel(models.Model):
@@ -165,9 +164,8 @@ class ItemModel(models.Model):
     location = PointField(null=True, blank=True)
     zip_code = models.CharField(max_length=255)
     price = models.FloatField()
-    sub_category = models.ForeignKey(
-        SubCategory, on_delete=models.CASCADE, related_name="item_sub_category"
-    )
+    category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
+    sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
     boost = models.BooleanField(default=False)
     is_available = models.BooleanField(default=True)
     owner = models.ForeignKey(User, related_name="post_owner", on_delete=models.CASCADE)
