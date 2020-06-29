@@ -164,7 +164,7 @@ class ItemModel(models.Model):
     location = PointField(null=True, blank=True)
     zip_code = models.CharField(max_length=255)
     price = models.FloatField()
-    category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
     boost = models.BooleanField(default=False)
     is_available = models.BooleanField(default=True)
