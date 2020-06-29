@@ -32,6 +32,17 @@ class subCategoryList(generics.ListAPIView):
     serializer_class = SubCategorySerializer
 
 
+class SubCategoryByCategoryIdList(generics.ListAPIView):
+    """ List sub categories in a category """
+
+    serializer_class = CategorySerializer
+
+    def get_queryset(self):
+        category_id = self.request.query_params.get("id", None)
+        category = Category.objects.get(id=category_id)
+        return category.subcategory_set.all()
+
+
 class TransactionList(generics.ListAPIView):
     """Return all user transaction history"""
 
@@ -72,7 +83,7 @@ class ItemRUD(generics.RetrieveUpdateDestroyAPIView):
         return self.retrieve(request, itemId)
 
     def put(self, request, itemId=None):
-        return self.update(request, itemId)
+        return self.partial_update(request, itemId)
 
     def delete(self, request, itemId=None):
         return self.destroy(request, itemId)  # send custom deletion success message
@@ -97,7 +108,7 @@ class ItemFilter(filters.FilterSet):
 
     class Meta:
         model = ItemModel
-        fields = ["sub_category", "min_price", "max_price", "condition"]
+        fields = ["sub_category", "category", "min_price", "max_price", "condition"]
 
 
 class ItemFilterView(generics.ListAPIView):
@@ -132,23 +143,5 @@ class PropertyFilterView(generics.ListAPIView):
         property_dict = json.loads(property)
         return ItemModel.objects.filter(
             sub_category=sub_category, properties__contains=property_dict
-        )
-
-
-class ItemFilterByLocationView(generics.ListAPIView):
-    """
-    Return items filtered by property in a given category
-    """
-
-    serializer_class = ItemSerializer
-    queryset = ItemModel.objects.all()
-
-    def get_queryset(self):
-        category = self.request.query_params.get("category", None)
-        property = self.request.query_params.get("property", None)
-        property_dict = json.loads(property)
-
-        return ItemModel.objects.filter(
-            category=category, properties__contains=property_dict
         )
 
