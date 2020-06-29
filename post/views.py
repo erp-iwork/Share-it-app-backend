@@ -15,6 +15,7 @@ from .serializers import (
     ItemSerializer,
     TransactionSerializer,
     SubCategorySerializer,
+    SubCategoryByCategorySerializer,
 )
 
 
@@ -35,7 +36,7 @@ class subCategoryList(generics.ListAPIView):
 class SubCategoryByCategoryIdList(generics.ListAPIView):
     """ List sub categories in a category """
 
-    serializer_class = CategorySerializer
+    serializer_class = SubCategoryByCategorySerializer
 
     def get_queryset(self):
         category_id = self.request.query_params.get("id", None)
