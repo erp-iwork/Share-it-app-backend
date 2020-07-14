@@ -8,7 +8,6 @@ RUN apt-get update && apt-get install   -y \
     libpq-dev\
     binutils \
     libproj-dev \
-    gdal-bin \
     gcc \
     libc-dev \
     libjpeg-dev \
