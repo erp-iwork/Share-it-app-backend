@@ -1,11 +1,11 @@
-version: "3"
+version: "3.7"
 
 services:
   redis:
     restart: always
     image: redis
     ports:
-      - '6379:6379'
+      - "6379:6379"
   src:
     build:
       context: .
@@ -25,15 +25,15 @@ services:
       - redis
 
   db:
-    image: mdillon/postgis:9.6
+    image: mdillon/postgis:9.5
     environment:
       - POSTGRES_DB=Share_it_db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=root
       - REDIS_HOST=redis
-      - POSTGRES_HOST_AUTH_METHOD=trust   
+      - POSTGRES_HOST_AUTH_METHOD=trust
     ports:
-      - "8080:8080"  
+      - "8080:8080"
 
   pgadmin:
     image: dpage/pgadmin4

@@ -10,7 +10,8 @@ from rest_framework import serializers, status
 from user.serializers import UserSerializer
 from utilities.exception_handler import CustomValidation
 from utilities.image_validation import validate_image
-from drf_extra_fields.geo_fields import PointField
+
+# from drf_extra_fields.geo_fields import PointField
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -26,6 +27,7 @@ class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
         fields = ("id", "name", "icon", "category", "category_id")
+
 
 class SubCategoryByCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -45,7 +47,7 @@ class ItemSerializer(serializers.ModelSerializer):
     owner_id = serializers.CharField(write_only=True)
     sub_category_id = serializers.CharField(write_only=True)
     sub_category = SubCategorySerializer(read_only=True)
-    location = PointField(allow_null=True)
+    # location = PointField(allow_null=True)
 
     class Meta:
         model = ItemModel
@@ -67,9 +69,14 @@ class ItemSerializer(serializers.ModelSerializer):
             # Create item or product
             item = ItemModel.objects.create(**validated_data)
             user = self.context.get("request").user
-            transaction = SharingStatus.objects.create(
-                transaction_type="Sharing", user=user, item=item
-            )
+            if item.is_donating:
+                SharingStatus.objects.create(
+                    transaction_type="Donating", user=user, item=item
+                )
+            else:
+                SharingStatus.objects.create(
+                    transaction_type="Sharing", user=user, item=item
+                )
 
         except Exception as e:
             print(e)

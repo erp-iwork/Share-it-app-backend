@@ -5,18 +5,19 @@ from user.serializers import (
     LoginSerializer,
     UserSerializer,
     FollowSerializer,
-    UnFollowSerializer,
     RatingSerializer,
     ProfileSerializer,
-    AddProfileSerializer,
+    MyProfileSerializer,
 )
-from main.models import Follow
+
+from main.models import Follow, Profile, User
 
 
-class SignupUserView(generics.CreateAPIView):
+class SignupUserView(generics.ListCreateAPIView):
     """Create a new user in the system"""
 
     serializer_class = UserSerializer
+    queryset = User.objects.all()
 
     def post(self, request):
         serializer = UserSerializer(data=request.data)
@@ -24,10 +25,15 @@ class SignupUserView(generics.CreateAPIView):
             user = serializer.save()
             return Response(user)
 
+    def get(self, request):
+        return self.list(request)
+
 
 class UpdateDeleteUserView(generics.RetrieveUpdateDestroyAPIView):
     """Update, Delete signup user info"""
 
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = UserSerializer
     queryset = get_user_model().objects.all()
     lookup_field = "id"
@@ -53,7 +59,7 @@ class LoginAPIView(generics.CreateAPIView):
 class AuthUserAPIView(generics.RetrieveAPIView):
     """Retrieve and return authentication user"""
 
-    serializer_class = UserSerializer
+    serializer_class = MyProfileSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -83,21 +89,18 @@ class FollowAPIView(generics.CreateAPIView):
 
 class UnfollowAPIView(generics.CreateAPIView):
     """
-    View that hanldes user followers and followings
+    View that hanldes user unfollowing previous following
     """
 
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = UnFollowSerializer
 
     def post(self, request):
-        data = {
-            "follower": self.request.user.id,
-            "following": request.data["following"],
-        }
-        serializer = UnFollowSerializer(data=data)
-        if serializer.is_valid(raise_exception=True):
-            return serializer.validated_data
+        following = (request.data["following"],)
+        data = Follow.objects.filter(
+            following=following, follower=self.request.user.id
+        ).delete()
+        return Response({"follow": f"Unfollow successfull"}, status=status.HTTP_200_OK,)
 
 
 class RagingAPIView(generics.CreateAPIView):
@@ -108,44 +111,11 @@ class RagingAPIView(generics.CreateAPIView):
     serializer_class = RatingSerializer
 
 
-class AddProfileInfoAPIView(generics.CreateAPIView):
-    """
-    View to add new rating to the user
-    """
-
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = AddProfileSerializer
-
-    def post(self, request):
-        data = {
-            "user": self.request.user.id,
-            "telegram": request.data["telegram"],
-            "facebook": request.data["facebook"],
-        }
-
-        serializer = AddProfileSerializer(data=data)
-        if serializer.is_valid(raise_exception=True):
-            return serializer.validated_data
-
-
-class PrifileAPIView(generics.RetrieveUpdateAPIView):
+class ProfileAPIView(generics.RetrieveUpdateDestroyAPIView):
     """Retrieve and return authentication user"""
 
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
+    # authentication_classes = (authentication.TokenAuthentication,)
+    # permission_classes = (permissions.IsAuthenticated,)
     serializer_class = ProfileSerializer
-
-    def get_object(self):
-        """Retrieve and return authentication user"""
-        return self.request.user
-
-
-# def get_client_ip(request):
-#     if "HTTP_X_FORWARDED_FOR" in request.META:
-#         x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
-#         ip = x_forwarded_for.split(",")[0]
-#     else:
-#         ip = request.META.get("REMOTE_ADDR")
-#     return ip
-
+    queryset = Profile.objects.all()
+    lookup_field = "user"

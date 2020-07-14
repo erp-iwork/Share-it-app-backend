@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "user",
     "main",
+    "geopy",
     "chat",
     "post",
     "channels",

@@ -8,5 +8,5 @@ websocket_urlpatterns = [
 ]
 
 application = ProtocolTypeRouter(
-    {"websocket": AuthMiddlewareStack(URLRouter(websocket_urlpatterns)),}
+    {"websocket": AuthMiddlewareStack(URLRouter(websocket_urlpatterns)), }
 )

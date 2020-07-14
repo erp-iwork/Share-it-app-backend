@@ -18,7 +18,8 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from model_utils import Choices
 
-RATING = Choices((1, "one"), (2, "two"), (3, "three"), (4, "four"), (5, "five"),)
+RATING = Choices((1, "one"), (2, "two"), (3, "three"),
+                 (4, "four"), (5, "five"),)
 
 
 class UserManager(BaseUserManager):
@@ -55,11 +56,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
-    zip_code = models.CharField(max_length=255)
-    location = PointField(null=True, blank=True)
-    image = models.ImageField(
-        upload_to="media/profile_pics", default="no-img.png", blank=True, null=True
-    )
+    zip_code = models.CharField(max_length=255, null=True, blank=True)
+    # location = PointField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True, default=0.0)
+    longitude = models.FloatField(null=True, blank=True, default=0.0)
+    avatar = models.ImageField(
+        upload_to="media/profile_pics", default="no-img.png")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
@@ -108,7 +110,8 @@ class Rating(models.Model):
     Rating user on a scale from one to 5
     """
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_rating")
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="user_rating")
     rating = models.PositiveSmallIntegerField(choices=RATING)
 
     def __str__(self):
@@ -121,8 +124,9 @@ class Profile(models.Model):
     """
 
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="user_profile"
-    )
+        User, on_delete=models.CASCADE, related_name="profile")
+    cover_img = models.ImageField(
+        upload_to="media/cover_pics", default="no-img.png")
     telegram = models.CharField(max_length=255, blank=True, null=True)
     facebook = models.CharField(max_length=255, blank=True, null=True)
     phonenumber = models.IntegerField(blank=True, null=True)
@@ -130,7 +134,7 @@ class Profile(models.Model):
     whatsapp = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return self.user
+        return self.user.name
 
 
 class Category(models.Model):
@@ -161,14 +165,18 @@ class ItemModel(models.Model):
     itemId = models.UUIDField(
         primary_key=True, null=False, default=uuid.uuid4, editable=False
     )
-    location = PointField(null=True, blank=True)
+
+    # location = PointField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True, default=0.0)
+    longitude = models.FloatField(null=True, blank=True, default=0.0)
     zip_code = models.CharField(max_length=255)
     price = models.FloatField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
     boost = models.BooleanField(default=False)
     is_available = models.BooleanField(default=True)
-    owner = models.ForeignKey(User, related_name="post_owner", on_delete=models.CASCADE)
+    owner = models.ForeignKey(
+        User, related_name="user", on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     condition = models.CharField(max_length=255)
     description = models.TextField()
