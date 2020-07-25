@@ -1,48 +1,21 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 from main.models import Message, User
 import json
+from django.db.models import Q
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
-    async def init_chat(self, data):
-        email = data["email"]
-
-        user = User.objects.get(email=email)
-
-        content = {"command": "init_chat"}
-        if not user:
-            content["error"] = "Unable to get or create User with username : " + email
-        content["success"] = "Chatting success with username : " + email
-        await self.send(text_data=json.dumps(content))
-
-    async def fetch_messages(self, data):
-        messages = Message.objects.order_by("-timestamp").all()[:50]
-        messages_list = []
-        for message in messages:
-
-            messages_list.append(
-                {
-                    "id": str(message.id),
-                    "sender": message.sender.email,
-                    "receiver": message.receiver.email,
-                    "message": message.message,
-                    "timestamp": str(message.timestamp),
-                }
-            )
-
-        content = {"command": "messages", "messages": messages_list}
-        await self.send(text_data=json.dumps(content))
-
     async def new_message(self, data):
+
         sender, receiver, message = (
             data["sender"],
             data["receiver"],
             data["message"],
         )
 
-        sender_user = User.objects.get(email=sender)
+        sender_user = User.objects.get(id=sender)
 
-        receiver_user = User.objects.get(email=receiver)
+        receiver_user = User.objects.get(id=receiver)
 
         message = Message.objects.create(
             sender=sender_user, receiver=receiver_user, message=message
@@ -52,10 +25,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "command": "new_message",
             "message": {
                 "id": str(message.id),
-                "sender": message.sender.email,
-                "receiver": message.receiver.email,
+                "is_read": False,
+                "sender": str(message.sender.id),
+                "receiver": str(message.receiver.id),
                 "message": message.message,
-                "timestamp": str(message.timestamp),
+                "timestamp": "2020-07-18T07:47:40.623276Z",
             },
         }
         await self.channel_layer.group_send(
@@ -63,8 +37,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     commands = {
-        "init_chat": init_chat,
-        "fetch_messages": fetch_messages,
         "new_message": new_message,
     }
 

@@ -75,11 +75,9 @@ class ItemListAdd(generics.ListCreateAPIView):
     lookup_field = "itemId"
 
     def post(self, request):
-        serializer = ItemSerializer(
-            data=request.data, context={"request": request})
+        serializer = ItemSerializer(data=request.data, context={"request": request})
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            print(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -172,8 +170,7 @@ class ItemFilter(filters.FilterSet):
 
     class Meta:
         model = ItemModel
-        fields = ["sub_category", "category",
-                  "min_price", "max_price", "condition"]
+        fields = ["sub_category", "category", "min_price", "max_price", "condition"]
 
 
 class ItemFilterView(generics.ListAPIView):

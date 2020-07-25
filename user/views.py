@@ -29,6 +29,14 @@ class SignupUserView(generics.ListCreateAPIView):
         return self.list(request)
 
 
+class UserCRUD(generics.RetrieveUpdateDestroyAPIView):
+    """Create a new user in the system"""
+
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    lookup_field = "id"
+
+
 class UpdateDeleteUserView(generics.RetrieveUpdateDestroyAPIView):
     """Update, Delete signup user info"""
 
