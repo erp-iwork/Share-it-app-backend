@@ -44,9 +44,6 @@ class CategoryRUD(generics.RetrieveUpdateDestroyAPIView):
         return self.partial_update(request, id)
 
 
-git
-
-
 def delete(self, request, id=None):
     # send custom deletion success message
     return self.destroy(request, id)
