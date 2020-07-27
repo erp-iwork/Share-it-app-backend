@@ -28,6 +28,30 @@ class CategoryList(generics.ListAPIView):
     serializer_class = CategorySerializer
 
 
+class CategoryRUD(generics.RetrieveUpdateDestroyAPIView):
+    """
+    View that can handle item get, update and delete
+    """
+
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    lookup_field = "id"
+
+    def get(self, request, id=None):
+        return self.retrieve(request, id)
+
+    def put(self, request, id=None):
+        return self.partial_update(request, id)
+
+
+git
+
+
+def delete(self, request, id=None):
+    # send custom deletion success message
+    return self.destroy(request, id)
+
+
 class subCategoryList(generics.ListAPIView):
     """Return all categories"""
 

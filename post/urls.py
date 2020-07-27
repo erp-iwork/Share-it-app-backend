@@ -15,6 +15,7 @@ urlpatterns = [
     path("item_property", views.PropertyFilterView.as_view(),
          name="properties_items"),
     path("categories/", views.CategoryList.as_view(), name="category"),
+    path("categories/<int:id>/", views.CategoryRUD.as_view(), name="category"),
     path("sub_categories/", views.subCategoryList.as_view(), name="sub_category"),
     path(
         "categories",
