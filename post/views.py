@@ -123,17 +123,19 @@ class ItemListAdd(generics.ListCreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class SharedItemRUD(generics.RetrieveAPIView):
+class SharedItemRUD(generics.ListAPIView):
     """
     View that can handle item get, update and delete
     """
 
     serializer_class = ItemSerializer
     queryset = ItemModel.objects.all()
-    lookup_field = "itemId"
 
-    def get(self, request, itemId=None):
-        return self.retrieve(request, itemId)
+    def get_queryset(self):
+        owner = self.request.query_params.get("owner", None)
+        return ItemModel.objects.filter(
+            owner=owner
+        )
 
 
 class ItemRUD(generics.RetrieveUpdateDestroyAPIView):

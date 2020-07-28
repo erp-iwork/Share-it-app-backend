@@ -8,7 +8,7 @@ app_name = "post"
 urlpatterns = [
     path("item/", views.ItemListAdd.as_view(), name="item_add_list"),
     path("item/<str:itemId>/", views.ItemRUD.as_view(), name="item_rud"),
-    path("shared_items/<str:itemId>/",
+    path("shared_items/",
          views.SharedItemRUD.as_view(), name="item_rud"),
     path("my_items/", views.UserItemList.as_view(), name="my_items"),
     path("items", views.ItemFilterView.as_view(), name="category_items"),
