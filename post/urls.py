@@ -17,6 +17,9 @@ urlpatterns = [
     path("categories/", views.CategoryList.as_view(), name="category"),
     path("categories/<int:id>/", views.CategoryRUD.as_view(), name="category"),
     path("sub_categories/", views.subCategoryList.as_view(), name="sub_category"),
+    path("sub_categories/<int:id>",
+         views.subCategoryRUD.as_view(), name="sub_category"),
+
     path(
         "categories",
         views.SubCategoryByCategoryIdList.as_view(),

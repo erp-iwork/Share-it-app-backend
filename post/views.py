@@ -56,6 +56,26 @@ class subCategoryList(generics.ListAPIView):
     serializer_class = SubCategorySerializer
 
 
+class subCategoryRUD(generics.RetrieveUpdateDestroyAPIView):
+    """
+    View that can handle item get, update and delete
+    """
+
+    queryset = SubCategory.objects.all()
+    serializer_class = SubCategorySerializer
+    lookup_field = "id"
+
+    def get(self, request, id=None):
+        return self.retrieve(request, id)
+
+    def put(self, request, id=None):
+        return self.partial_update(request, id)
+
+    def delete(self, request, id=None):
+        # send custom deletion success message
+        return self.destroy(request, id)
+
+
 class SubCategoryByCategoryIdList(generics.ListAPIView):
     """ List sub categories in a category """
 
