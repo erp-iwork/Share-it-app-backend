@@ -170,8 +170,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 # ]
 
 AUTH_USER_MODEL = "main.User"
-# WSGI_APPLICATION = "src.wsgi.application"
-ASGI_APPLICATION = "src.asgi.application"
+ASGI_APPLICATION = "chat.routing.application"
 
 # REDIS_HOST = os.environ.get("REDIS_HOST")
 # CHANNEL_LAYERS = {
