@@ -6,7 +6,6 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.validators import UniqueValidator
 from utilities.exception_handler import CustomValidation
-from drf_extra_fields.geo_fields import PointField
 
 
 class UserSerializer(serializers.ModelSerializer):
