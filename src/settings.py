@@ -175,10 +175,18 @@ AUTH_USER_MODEL = "main.User"
 ASGI_APPLICATION = "chat.routing.application"
 
 REDIS_HOST = os.environ.get("REDIS_HOST")
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {"hosts": [("redis", 6379)],},
+#     },
+# }
 CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {"hosts": [("redis", 6379)],},
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+        },
     },
 }
 GDAL_LIBRARY_PATH = os.environ.get("GDAL_LIBRARY_PATH")

@@ -39,15 +39,17 @@ class MessageList(generics.ListAPIView):
 
 class UserList(APIView):
     def get(self, request):
-
         id = self.request.GET.get("id")
         users = (
             User.objects.exclude(id=id)
             .annotate(receiver_message_time=Max("sender_user__timestamp"))
             .order_by("-receiver_message_time")
         )
-
         qs = UserListSerializers(users, many=True, context={"id": id})
+
+
+
+
 
         return Response(qs.data)
 
