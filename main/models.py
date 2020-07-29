@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
-from django.contrib.gis.db.models import PointField
 
 from django.conf import settings
 from datetime import datetime
