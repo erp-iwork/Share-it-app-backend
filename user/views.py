@@ -47,7 +47,8 @@ class UpdateDeleteUserView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "id"
 
     def put(self, request, id=None):
-        return self.update(request, id)
+
+        return self.partial_update(request, id)
 
     def delete(self, request, id=None):
         return self.destroy(request, id)
