@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework.authtoken",
-    "django.contrib.gis",
     "drf_yasg",
     "corsheaders",
     "user",
@@ -189,7 +188,5 @@ CHANNEL_LAYERS = {
         },
     },
 }
-GDAL_LIBRARY_PATH = os.environ.get("GDAL_LIBRARY_PATH")
-GEOS_LIBRARY_PATH = os.environ.get("GEOS_LIBRARY_PATH")
 
 django_heroku.settings(locals())
