@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
-from django.contrib.gis.admin import OSMGeoAdmin
 from django.utils.translation import gettext as _
 from main import models
 
@@ -23,7 +22,7 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.ItemImageModel)
-admin.site.register(models.ItemModel, OSMGeoAdmin)
+admin.site.register(models.ItemModel)
 admin.site.register(models.Category)
 admin.site.register(models.SubCategory)
 admin.site.register(models.Profile)
