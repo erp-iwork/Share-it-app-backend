@@ -57,11 +57,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     zip_code = models.CharField(max_length=255, null=True, blank=True)
-    # location = PointField(null=True, blank=True)
+    location = models.CharField(max_length=255, null=True, blank=True)
     latitude = models.FloatField(null=True, blank=True, default=0.0)
     longitude = models.FloatField(null=True, blank=True, default=0.0)
     avatar = models.ImageField(
         upload_to="media/profile_pics", default="no-img.png")
+    cover_img = models.ImageField(
+        upload_to="media/cover_pics", default="no-img.png")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
@@ -125,8 +127,6 @@ class Profile(models.Model):
 
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="profile")
-    cover_img = models.ImageField(
-        upload_to="media/cover_pics", default="no-img.png")
     telegram = models.CharField(max_length=255, blank=True, null=True)
     facebook = models.CharField(max_length=255, blank=True, null=True)
     phonenumber = models.IntegerField(blank=True, null=True)
