@@ -40,14 +40,15 @@ class UserCRUD(generics.RetrieveUpdateDestroyAPIView):
 class UpdateDeleteUserView(generics.RetrieveUpdateDestroyAPIView):
     """Update, Delete signup user info"""
 
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
+    # authentication_classes = (authentication.TokenAuthentication,)
+    # permission_classes = (permissions.IsAuthenticated,)
     serializer_class = UserSerializer
     queryset = get_user_model().objects.all()
     lookup_field = "id"
 
     def put(self, request, id=None):
-        return self.update(request, id)
+
+        return self.partial_update(request, id)
 
     def delete(self, request, id=None):
         return self.destroy(request, id)

@@ -24,9 +24,11 @@ class UserSerializer(serializers.ModelSerializer):
             "id",
             "email",
             "avatar",
+            "cover_img",
             "password",
             "name",
             "zip_code",
+            "location",
             "longitude",
             "latitude",
         )
@@ -155,11 +157,25 @@ class RatingSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    # user = UserSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
+    rating_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
         fields = "__all__"
+
+    def get_rating_count(self, instance):
+        user = User.objects.get(name=instance)
+        ratings = Rating.objects.filter(user=user)
+        rate = 0
+        count = 0
+        for rating in ratings:
+            rate += rating.rating
+            count += 1
+        if count == 0:
+            return 0
+        else:
+            return rate / count
 
 
 class MyProfileSerializer(serializers.ModelSerializer):
@@ -180,8 +196,10 @@ class MyProfileSerializer(serializers.ModelSerializer):
             "name",
             "avatar",
             "longitude",
+            "location",
             "latitude",
             "following",
+            "cover_img",
             "followers",
             "following_count",
             "followers_count",
