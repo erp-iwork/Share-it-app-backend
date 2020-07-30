@@ -1,9 +1,0 @@
-{
-    "name": "Django Channels Heroku",
-    "description": "Running a simple chat on Heroku",
-    "keywords": ["django", "channels", "websockets", "heroku"],
-    "scripts": {
-      "postdeploy": "python manage.py migrate"
-    },
-    "addons": ["heroku-postgresql", "heroku-redis"]
-  }
