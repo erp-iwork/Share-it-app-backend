@@ -180,20 +180,12 @@ ASGI_APPLICATION = "chat.routing.application"
 #         "CONFIG": {"hosts": [("redis", 6379)],},
 #     },
 # }
-# CHANNEL_LAYERS = {
-#     "default": {
-#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
-#         'CONFIG': {
-#             "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
-#             # "hosts": [("redis", 6379)],
-#         },
-#     },
-# }
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [config('CHANNEL_LAYERS_HOST')],
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+            # "hosts": [("redis", 6379)],
         },
     },
 }
