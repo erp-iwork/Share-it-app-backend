@@ -169,9 +169,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 #     "x-requested-with",
 # ]
 
-CHAT_WS_SERVER_HOST = 'localhost'
-CHAT_WS_SERVER_PORT = 5002
-CHAT_WS_SERVER_PROTOCOL = 'ws'
 
 AUTH_USER_MODEL = "main.User"
 ASGI_APPLICATION = "chat.routing.application"
