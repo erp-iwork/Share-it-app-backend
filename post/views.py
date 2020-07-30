@@ -28,11 +28,52 @@ class CategoryList(generics.ListAPIView):
     serializer_class = CategorySerializer
 
 
+class CategoryRUD(generics.RetrieveUpdateDestroyAPIView):
+    """
+    View that can handle item get, update and delete
+    """
+
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    lookup_field = "id"
+
+    def get(self, request, id=None):
+        return self.retrieve(request, id)
+
+    def put(self, request, id=None):
+        return self.partial_update(request, id)
+
+
+def delete(self, request, id=None):
+    # send custom deletion success message
+    return self.destroy(request, id)
+
+
 class subCategoryList(generics.ListAPIView):
     """Return all categories"""
 
     queryset = SubCategory.objects.all()
     serializer_class = SubCategorySerializer
+
+
+class subCategoryRUD(generics.RetrieveUpdateDestroyAPIView):
+    """
+    View that can handle item get, update and delete
+    """
+
+    queryset = SubCategory.objects.all()
+    serializer_class = SubCategorySerializer
+    lookup_field = "id"
+
+    def get(self, request, id=None):
+        return self.retrieve(request, id)
+
+    def put(self, request, id=None):
+        return self.partial_update(request, id)
+
+    def delete(self, request, id=None):
+        # send custom deletion success message
+        return self.destroy(request, id)
 
 
 class SubCategoryByCategoryIdList(generics.ListAPIView):
@@ -75,23 +116,26 @@ class ItemListAdd(generics.ListCreateAPIView):
     lookup_field = "itemId"
 
     def post(self, request):
-        serializer = ItemSerializer(data=request.data, context={"request": request})
+        serializer = ItemSerializer(
+            data=request.data, context={"request": request})
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class SharedItemRUD(generics.RetrieveAPIView):
+class SharedItemRUD(generics.ListAPIView):
     """
     View that can handle item get, update and delete
     """
 
     serializer_class = ItemSerializer
     queryset = ItemModel.objects.all()
-    lookup_field = "itemId"
 
-    def get(self, request, itemId=None):
-        return self.retrieve(request, itemId)
+    def get_queryset(self):
+        owner = self.request.query_params.get("owner", None)
+        return ItemModel.objects.filter(
+            owner=owner
+        )
 
 
 class ItemRUD(generics.RetrieveUpdateDestroyAPIView):
@@ -170,7 +214,8 @@ class ItemFilter(filters.FilterSet):
 
     class Meta:
         model = ItemModel
-        fields = ["sub_category", "category", "min_price", "max_price", "condition"]
+        fields = ["sub_category", "category",
+                  "min_price", "max_price", "condition"]
 
 
 class ItemFilterView(generics.ListAPIView):
