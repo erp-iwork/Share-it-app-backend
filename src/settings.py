@@ -31,7 +31,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-
+use_websockets = True
 # Application definition
 
 INSTALLED_APPS = [
