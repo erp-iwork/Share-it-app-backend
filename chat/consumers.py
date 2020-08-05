@@ -20,12 +20,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message = Message.objects.create(
             sender=sender_user, receiver=receiver_user, message=message
         )
+        unread = Message.objects.filter(Q(
+            receiver=message.receiver.id)).filter(is_read=False).count()
 
         content = {
             "command": "new_message",
             "message": {
                 "id": str(message.id),
                 "is_read": False,
+                "unread": unread,
                 "sender": str(message.sender.id),
                 "receiver": str(message.receiver.id),
                 "message": message.message,
