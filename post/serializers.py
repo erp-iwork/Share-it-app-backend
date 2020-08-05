@@ -47,7 +47,6 @@ class ItemSerializer(serializers.ModelSerializer):
     owner_id = serializers.CharField(write_only=True)
     sub_category_id = serializers.CharField(write_only=True)
     sub_category = SubCategorySerializer(read_only=True)
-    # location = PointField(allow_null=True)
 
     class Meta:
         model = ItemModel
@@ -79,7 +78,6 @@ class ItemSerializer(serializers.ModelSerializer):
                 )
 
         except Exception as e:
-            print(e)
             raise CustomValidation()
 
         # Iterate and create images for using an item instance

@@ -29,7 +29,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "sender": str(message.sender.id),
                 "receiver": str(message.receiver.id),
                 "message": message.message,
-                "timestamp": "2020-07-18T07:47:40.623276Z",
+                "timestamp": message.timestamp,
             },
         }
         await self.channel_layer.group_send(

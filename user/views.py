@@ -10,7 +10,7 @@ from user.serializers import (
     MyProfileSerializer,
 )
 
-from main.models import Follow, Profile, User
+from main.models import Follow, Profile, User, Rating
 
 
 class SignupUserView(generics.ListCreateAPIView):
@@ -112,11 +112,12 @@ class UnfollowAPIView(generics.CreateAPIView):
         return Response({"follow": f"Unfollow successfull"}, status=status.HTTP_200_OK,)
 
 
-class RagingAPIView(generics.CreateAPIView):
+class RatingAPIView(generics.ListCreateAPIView):
     """
     View to add new rating to the user
     """
 
+    queryset = Rating.objects.all()
     serializer_class = RatingSerializer
 
 

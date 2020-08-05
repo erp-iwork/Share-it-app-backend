@@ -13,7 +13,7 @@ urlpatterns = [
     path(
         "user/<uuid:id>/", views.UpdateDeleteUserView.as_view(), name="get_user"
     ),  # Send user uuid along with url user/uuid/
-    path("user/rating/", views.RagingAPIView.as_view(), name="user_rating"),
+    path("user/rating/", views.RatingAPIView.as_view(), name="user_rating"),
     path(
         "user/profile/<str:user>/", views.ProfileAPIView.as_view(), name="user_profile"
     ),  # Send user uuid alliong url user/profile/uuid/

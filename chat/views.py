@@ -9,8 +9,6 @@ from rest_framework import (
     status,
     pagination,
 )
-
-
 from .serializers import MessageSerializer, UserListSerializers
 from user.serializers import UserSerializer
 from django.db.models import Q

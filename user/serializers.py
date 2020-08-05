@@ -13,8 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     email = serializers.EmailField(
         validators=[
-            UniqueValidator(User.objects.all(),
-                            "User with this email already exists")
+            UniqueValidator(User.objects.all(), "User with this email already exists")
         ]
     )
 
@@ -86,7 +85,7 @@ class LoginSerializer(serializers.ModelSerializer):
         token, created = Token.objects.get_or_create(user=user)
         data = LoggedInUserSerializer(user)
         return Response(
-            {"user": data.data, "token": token.key, }, status=status.HTTP_200_OK,
+            {"user": data.data, "token": token.key,}, status=status.HTTP_200_OK,
         )
 
 
