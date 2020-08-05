@@ -121,6 +121,26 @@ class RatingAPIView(generics.ListCreateAPIView):
     serializer_class = RatingSerializer
 
 
+class RatingRUD(generics.RetrieveUpdateDestroyAPIView):
+    """
+    View to add new rating to the user
+    """
+
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer
+    lookup_field = "ratingId"
+
+    def get(self, request, ratingId=None):
+        return self.retrieve(request, ratingId)
+
+    def put(self, request, ratingId=None):
+        return self.partial_update(request, ratingId)
+
+    def delete(self, request, ratingId=None):
+        # send custom deletion success message
+        return self.destroy(request, ratingId)
+
+
 class ProfileAPIView(generics.RetrieveUpdateDestroyAPIView):
     """Retrieve and return authentication user"""
 
