@@ -20,7 +20,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="User",
             fields=[
-                ("password", models.CharField(max_length=128, verbose_name="password")),
+                ("password", models.CharField(
+                    max_length=128, verbose_name="password")),
                 (
                     "last_login",
                     models.DateTimeField(
@@ -89,7 +90,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"abstract": False,},
+            options={"abstract": False, },
         ),
         migrations.CreateModel(
             name="Category",
@@ -265,7 +266,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"ordering": ("timestamp",),},
+            options={"ordering": ("timestamp",), },
         ),
         migrations.AddField(
             model_name="itemmodel",
