@@ -108,6 +108,7 @@ class Rating(models.Model):
     Rating user on a scale from one to 5
     """
 
+    ratingId = models.AutoField(primary_key=True,)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_rating")
     rater = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_rater")
     rating = models.PositiveSmallIntegerField(choices=RATING)
@@ -160,11 +161,7 @@ class SubCategory(models.Model):
 
 
 class ItemModel(models.Model):
-    itemId = models.UUIDField(
-        primary_key=True, null=False, default=uuid.uuid4, editable=False
-    )
-
-    # location = PointField(null=True, blank=True)
+    itemId = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     latitude = models.FloatField(null=True, blank=True, default=0.0)
     longitude = models.FloatField(null=True, blank=True, default=0.0)
     zip_code = models.CharField(max_length=255)
@@ -180,6 +177,7 @@ class ItemModel(models.Model):
     term_and_conditions = models.TextField()
     properties = JSONField(blank=True, null=True)
     is_donating = models.BooleanField(default=False)
+    view = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
