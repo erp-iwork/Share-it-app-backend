@@ -152,7 +152,12 @@ class RatingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rating
-        fields = ("id", "name", "email", "avator")
+        fields = (
+            "user_rater__id",
+            "user_rater__name",
+            "user_rater__email",
+            "user_rater__avator",
+        )
         depth = 1
 
 
