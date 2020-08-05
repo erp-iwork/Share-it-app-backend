@@ -180,6 +180,7 @@ class ItemModel(models.Model):
     term_and_conditions = models.TextField()
     properties = JSONField(blank=True, null=True)
     is_donating = models.BooleanField(default=False)
+    view = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
