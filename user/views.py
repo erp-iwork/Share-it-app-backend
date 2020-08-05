@@ -120,6 +120,10 @@ class RatingAPIView(generics.ListCreateAPIView):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
 
+    def get_queryset(self):
+        user_id = self.request.GET.get("user_id")
+        return self.queryset.filter(user=user_id)
+
 
 class RatingRUD(generics.RetrieveUpdateDestroyAPIView):
     """
