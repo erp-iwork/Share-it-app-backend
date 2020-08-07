@@ -7,10 +7,7 @@ from rest_framework.response import Response
 from utilities.exception_handler import CustomValidation
 from utilities.permission import IsAuthenticatedOrReadOnly
 from rest_framework.filters import SearchFilter, OrderingFilter
-
-# from django.contrib.gis import geoip2
-# from geopy import distance, Nominatim, GoogleV3
-# from geopy.distance import lonlat, distance as dis, Point, geodesic
+from django.db.models import Count
 
 from .serializers import (
     CategorySerializer,
@@ -120,6 +117,18 @@ class ItemListAdd(generics.ListCreateAPIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class TopViewItemListAdd(generics.ListAPIView):
+    """
+    Allow to post item only authenticated user
+    """
+
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    queryset = ItemModel.objects.annotate(Count("view")).order_by("-created_at")[:10]
+    serializer_class = ItemSerializer
 
 
 class SharedItemRUD(generics.ListAPIView):
