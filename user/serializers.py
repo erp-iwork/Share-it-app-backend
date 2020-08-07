@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.validators import UniqueValidator
 from utilities.exception_handler import CustomValidation
 from django.db.models import Q
+import json
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -160,7 +161,9 @@ class RatingSerializer(serializers.ModelSerializer):
         # depth = 1
 
     def get_rater_detail(self, obj):
-        return User.objects.filter(Q(id=obj))
+        user = User.objects.get(id=obj.rater.id)
+        users = UserSerializer(user)
+        return users.data
 
 
 class ProfileSerializer(serializers.ModelSerializer):
