@@ -13,7 +13,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     email = serializers.EmailField(
         validators=[
-            UniqueValidator(User.objects.all(), "User with this email already exists")
+            UniqueValidator(User.objects.all(),
+                            "User with this email already exists")
         ]
     )
 
@@ -85,7 +86,7 @@ class LoginSerializer(serializers.ModelSerializer):
         token, created = Token.objects.get_or_create(user=user)
         data = LoggedInUserSerializer(user)
         return Response(
-            {"user": data.data, "token": token.key,}, status=status.HTTP_200_OK,
+            {"user": data.data, "token": token.key, }, status=status.HTTP_200_OK,
         )
 
 
@@ -152,12 +153,7 @@ class RatingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rating
-        fields = (
-            "user_rater__id",
-            "user_rater__name",
-            "user_rater__email",
-            "user_rater__avator",
-        )
+        fields = "__all__"
         depth = 1
 
 

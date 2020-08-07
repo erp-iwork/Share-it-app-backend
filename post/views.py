@@ -108,15 +108,16 @@ class ItemListAdd(generics.ListCreateAPIView):
     Allow to post item only authenticated user
     """
 
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
+    # authentication_classes = (authentication.TokenAuthentication,)
+    # permission_classes = (permissions.IsAuthenticated,)
 
     queryset = ItemModel.objects.all()
     serializer_class = ItemSerializer
     lookup_field = "itemId"
 
     def post(self, request):
-        serializer = ItemSerializer(data=request.data, context={"request": request})
+        serializer = ItemSerializer(
+            data=request.data, context={"request": request})
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -146,6 +147,7 @@ class ItemRUD(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "itemId"
 
     def get(self, request, itemId=None):
+        print("xxassssssssssvvvvvvvvvvvvv")
         item = ItemModel.objects.get(itemId=itemId)
         item.view = item.view + 1
         item.save()
@@ -214,7 +216,8 @@ class ItemFilter(filters.FilterSet):
 
     class Meta:
         model = ItemModel
-        fields = ["sub_category", "category", "min_price", "max_price", "condition"]
+        fields = ["sub_category", "category",
+                  "min_price", "max_price", "condition"]
 
 
 class ItemFilterView(generics.ListAPIView):
