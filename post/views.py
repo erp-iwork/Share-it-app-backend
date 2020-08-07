@@ -124,8 +124,8 @@ class TopViewItemListAdd(generics.ListAPIView):
     Allow to post item only authenticated user
     """
 
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
+    # authentication_classes = (authentication.TokenAuthentication,)
+    # permission_classes = (permissions.IsAuthenticated,)
     queryset = (
         ItemModel.objects.filter(is_donating=False).order_by("-view")[:10]
         | ItemModel.objects.filter().order_by("-view")[:10]
