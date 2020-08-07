@@ -150,6 +150,11 @@ class RatingSerializer(serializers.ModelSerializer):
     add new user rating serializer
     """
 
+    rater = serializers.SerializerMethodField()
+
+    def get_rater(self, obj):
+        return User.objects.get(id=obj)
+
     class Meta:
         model = Rating
         fields = "__all__"
