@@ -154,7 +154,7 @@ class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
         fields = "__all__"
-        depth = 1
+        # depth = 1
 
 
 class ProfileSerializer(serializers.ModelSerializer):

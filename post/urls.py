@@ -11,6 +11,7 @@ urlpatterns = [
     path("shared_items/", views.SharedItemRUD.as_view(), name="item_rud"),
     path("my_items/", views.UserItemList.as_view(), name="my_items"),
     path("items", views.ItemFilterView.as_view(), name="category_items"),
+    path("top-view-items", views.TopViewItemListAdd.as_view(), name="category_items"),
     path("item_property", views.PropertyFilterView.as_view(), name="properties_items"),
     path("categories/", views.CategoryList.as_view(), name="category"),
     path("categories/<int:id>/", views.CategoryRUD.as_view(), name="category"),
