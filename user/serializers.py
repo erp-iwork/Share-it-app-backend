@@ -6,6 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.validators import UniqueValidator
 from utilities.exception_handler import CustomValidation
+from django.db.models import Q
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -151,17 +152,15 @@ class RatingSerializer(serializers.ModelSerializer):
     add new user rating serializer
     """
 
-    # rater = serializers.SerializerMethodField("getRater")
-
-    # def getRater(self, obj):
-    #     print("obj")
-    #     print(obj.id)
-    #     return obj
+    rater = serializers.SerializerMethodField("get_rater_detail")
 
     class Meta:
         model = Rating
         fields = "__all__"
         # depth = 1
+
+    def get_rater_detail(self, obj):
+        return User.objects.filter(Q(id=obj))
 
 
 class ProfileSerializer(serializers.ModelSerializer):
