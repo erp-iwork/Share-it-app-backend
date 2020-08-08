@@ -227,7 +227,14 @@ class ItemFilter(filters.FilterSet):
 
     class Meta:
         model = ItemModel
-        fields = ["sub_category", "category", "min_price", "max_price", "condition"]
+        fields = [
+            "sub_category",
+            "category",
+            "city",
+            "min_price",
+            "max_price",
+            "condition",
+        ]
 
 
 class ItemFilterView(generics.ListAPIView):
