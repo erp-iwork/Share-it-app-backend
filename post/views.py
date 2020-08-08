@@ -231,6 +231,7 @@ class ItemFilter(filters.FilterSet):
             "sub_category",
             "category",
             "city",
+            "state",
             "zip_code",
             "min_price",
             "max_price",
