@@ -153,7 +153,7 @@ class RatingSerializer(serializers.ModelSerializer):
     add new user rating serializer
     """
 
-    rater = serializers.SerializerMethodField("get_rater_detail")
+    rater_user = serializers.SerializerMethodField("get_rater_detail")
 
     class Meta:
         model = Rating

@@ -5,9 +5,10 @@ from main.models import (
     User,
     SharingStatus,
     SubCategory,
+    Rating
 )
 from rest_framework import serializers, status
-from user.serializers import UserSerializer
+from user.serializers import UserSerializer, RatingSerializer
 from utilities.exception_handler import CustomValidation
 from utilities.image_validation import validate_image
 
@@ -47,10 +48,16 @@ class ItemSerializer(serializers.ModelSerializer):
     owner_id = serializers.CharField(write_only=True)
     sub_category_id = serializers.CharField(write_only=True)
     sub_category = SubCategorySerializer(read_only=True)
+    rating = serializers.SerializerMethodField("get_all_rating")
 
     class Meta:
         model = ItemModel
         fields = "__all__"
+
+    def get_all_rating(self, val):
+        ratings = Rating.objects.filter(user=val.owner.id)
+        rating = RatingSerializer(ratings, many=True)
+        return rating.data
 
     def create(self, validated_data):
         """Validate the length images >2"""
@@ -116,4 +123,3 @@ class TransactionSerializer(serializers.ModelSerializer):
         model = SharingStatus
         fields = ("transaction_type", "item", "user", "transaction_time")
         write_only_fields = "user"
-

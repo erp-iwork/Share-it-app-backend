@@ -15,7 +15,7 @@ urlpatterns = [
     ),  # Send user uuid along with url user/uuid/
     path("user/rating/", views.RatingAPIView.as_view(), name="user_rating"),
     path(
-        "user/rating/<int:ratingId>/", views.RatingAPIView.as_view(), name="user_rating"
+        "user/rating/<str:rater>/", views.RatingRUD.as_view(), name="user_rating"
     ),
     path(
         "user/profile/<str:user>/", views.ProfileAPIView.as_view(), name="user_profile"
