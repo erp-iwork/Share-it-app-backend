@@ -33,6 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
             "location",
             "longitude",
             "latitude",
+            "created_at"
         )
         extra_kwargs = {
             "password": {"write_only": True, "min_length": 8},
@@ -215,6 +216,7 @@ class MyProfileSerializer(serializers.ModelSerializer):
             "followers_count",
             "rating_count",
             "profile",
+
         )
 
     def get_following(self, obj):
