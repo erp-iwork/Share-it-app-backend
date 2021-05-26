@@ -1,23 +1,22 @@
-FROM python:3.7-alpine
+FROM python:3.7-slim
 LABEL MAINTAINER="Iwork PLC" 
-
-ENV PYTHONUNBUFFERED=1
-
-COPY ./requirements.txt /requirements.txt
-
+ENV PYTHONUNBUFFERED 1
 RUN pip install --upgrade pip
-RUN apk add --update --no-cache postgresql-client
-RUN apk add --update --no-cache postgresql-client
-RUN apk add --update --no-cache --virtual .tmp-build-deps \
-    gcc libc-dev linux-headers postgresql-dev
-RUN pip install -r /requirements.txt
-
-RUN apk del .tmp-build-deps
-
+RUN apt-get update && apt-get install   -y \
+    build-essential\
+    python3.7-dev\
+    libpq-dev\
+    binutils \
+    libproj-dev \
+    gdal-bin \
+    gcc \
+    libc-dev \
+    libjpeg-dev \
+    zlib1g-dev
 RUN mkdir /src
 WORKDIR /src
 COPY ./ /src
+COPY ./requirements.txt /requirements.txt
+RUN pip3 install -r /requirements.txt
 
-RUN adduser -D user
-USER user
 

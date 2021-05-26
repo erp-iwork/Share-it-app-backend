@@ -13,7 +13,7 @@ help:
 rmpyc:
 	find . | grep -E "__pycache__|\.pyc|\.pyo" | xargs sudo rm -rf
 
-build: rmpyc
+build: #rmpyc
 	$(COMPOSE) build
 
 up:

@@ -17,6 +17,7 @@ import django_heroku
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
+# GEOIP_PATH = os.path.join(BASE_DIR, "geoip")
 
 
 # Quick-start development settings - unsuitable for production
@@ -30,7 +31,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-
+# use_websockets = True
 # Application definition
 
 INSTALLED_APPS = [
@@ -46,7 +47,10 @@ INSTALLED_APPS = [
     "corsheaders",
     "user",
     "main",
+    "chat",
     "post",
+    "channels",
+    "django_filters",
 ]
 
 MIDDLEWARE = [
@@ -77,8 +81,6 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = "src.wsgi.application"
 
 
 # Database
@@ -114,6 +116,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.TokenAuthentication",
     ),
+    # "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
 }
 
 
@@ -166,5 +169,33 @@ CORS_ORIGIN_ALLOW_ALL = True
 #     "x-requested-with",
 # ]
 
+
 AUTH_USER_MODEL = "main.User"
+ASGI_APPLICATION = "chat.routing.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [("redis", 6379)],},
+    },
+}
+# CHANNEL_LAYERS = {
+#     "default": {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+#             # "hosts": [("redis", 6379)],
+#         },
+#     },
+# }
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "asgi_redis.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+#         },
+#         "ROUTING": "chat.routing.application",
+#     },
+# }
+
 django_heroku.settings(locals())
