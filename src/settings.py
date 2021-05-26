@@ -31,7 +31,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-
+# use_websockets = True
 # Application definition
 
 INSTALLED_APPS = [
@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework.authtoken",
-    "django.contrib.gis",
     "drf_yasg",
     "corsheaders",
     "user",
@@ -89,7 +88,7 @@ TEMPLATES = [
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.contrib.gis.db.backends.postgis",
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": os.environ.get("DB_NAME"),
         "USER": os.environ.get("DB_USER"),
         "PASSWORD": os.environ.get("DB_PASS"),
@@ -170,16 +169,33 @@ CORS_ORIGIN_ALLOW_ALL = True
 #     "x-requested-with",
 # ]
 
+
 AUTH_USER_MODEL = "main.User"
-# WSGI_APPLICATION = "src.wsgi.application"
 ASGI_APPLICATION = "chat.routing.application"
 
-REDIS_HOST = os.environ.get("REDIS_HOST")
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {"hosts": [("redis", 6379)],},
     },
 }
+# CHANNEL_LAYERS = {
+#     "default": {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+#             # "hosts": [("redis", 6379)],
+#         },
+#     },
+# }
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "asgi_redis.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+#         },
+#         "ROUTING": "chat.routing.application",
+#     },
+# }
 
 django_heroku.settings(locals())

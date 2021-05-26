@@ -12,7 +12,6 @@ gunicorn==19.9.0
 pytz==2018.9
 whitenoise>=4.1.2
 django-filter>=2.3.0
-geopy
 django-extra-fields
 Pillow==6.2.0
 

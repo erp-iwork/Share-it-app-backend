@@ -6,13 +6,18 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.validators import UniqueValidator
 from utilities.exception_handler import CustomValidation
+from django.db.models import Q
+import json
 
 
 class UserSerializer(serializers.ModelSerializer):
     """serializer for the users objects"""
 
-    image = serializers.ImageField(
-        max_length=None, use_url=True, allow_null=True, required=False
+    email = serializers.EmailField(
+        validators=[
+            UniqueValidator(User.objects.all(),
+                            "User with this email already exists")
+        ]
     )
 
     class Meta:
@@ -20,10 +25,15 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "email",
-            "image",
+            "avatar",
+            "cover_img",
             "password",
             "name",
+            "zip_code",
             "location",
+            "longitude",
+            "latitude",
+            "created_at"
         )
         extra_kwargs = {
             "password": {"write_only": True, "min_length": 8},
@@ -34,6 +44,7 @@ class UserSerializer(serializers.ModelSerializer):
         """Create a new user with encrypted password and return it"""
         user = get_user_model().objects.create_user(**validated_data)
         token, created = Token.objects.get_or_create(user=user)
+        profile = Profile.objects.create(user=user)
         data = LoggedInUserSerializer(user)
         return {
             "user": data.data,
@@ -78,7 +89,7 @@ class LoginSerializer(serializers.ModelSerializer):
         token, created = Token.objects.get_or_create(user=user)
         data = LoggedInUserSerializer(user)
         return Response(
-            {"user": data.data, "token": token.key,}, status=status.HTTP_200_OK,
+            {"user": data.data, "token": token.key, }, status=status.HTTP_200_OK,
         )
 
 
@@ -89,7 +100,7 @@ class LoggedInUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "name", "location", "image", "zip_code")
+        fields = ("id", "name", "avatar", "email")
 
 
 class FollowingSerializer(serializers.ModelSerializer):
@@ -138,62 +149,47 @@ class FollowSerializer(serializers.ModelSerializer):
         )
 
 
-class UnFollowSerializer(serializers.ModelSerializer):
-    """
-    Follow and UnFollow serializer
-    """
-
-    class Meta:
-        model = Follow
-        fields = "__all__"
-
-    def validate(self, data):
-        """
-        validate self follow
-        """
-        following = data.get("following", None)
-        follower = data.get("follower", None)
-        data = Follow.objects.filter(following=following, follower=follower).delete()
-        return Response(
-            {"follow": f"You unfollow {data.following}"}, status=status.HTTP_200_OK,
-        )
-
-
 class RatingSerializer(serializers.ModelSerializer):
     """
     add new user rating serializer
     """
 
+    rater_user = serializers.SerializerMethodField("get_rater_detail")
+
     class Meta:
         model = Rating
         fields = "__all__"
+        # depth = 1
+
+    def get_rater_detail(self, obj):
+        user = User.objects.get(id=obj.rater.id)
+        users = UserSerializer(user)
+        return users.data
 
 
-class AddProfileSerializer(serializers.ModelSerializer):
-    """
-    serializer used to add new profile data for user
-    """
+class ProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    rating_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
         fields = "__all__"
 
-    def validate(self, data):
-        """
-        validate self follow
-        """
-        data = Profile.objects.create(**data)
-        return Response(
-            {"profile": f"Profile updated successfully"}, status=status.HTTP_200_OK,
-        )
+    def get_rating_count(self, instance):
+        user = User.objects.get(name=instance)
+        ratings = Rating.objects.filter(user=user)
+        rate = 0
+        count = 0
+        for rating in ratings:
+            rate += rating.rating
+            count += 1
+        if count == 0:
+            return 0
+        else:
+            return rate / count
 
-    def update(self, instance, validated_data):
-        """
-        update user profile data
-        """
 
-
-class ProfileSerializer(serializers.ModelSerializer):
+class MyProfileSerializer(serializers.ModelSerializer):
     """
     user profile detials which include folowing follower and rating count (0-5)
     """
@@ -203,34 +199,37 @@ class ProfileSerializer(serializers.ModelSerializer):
     following_count = serializers.SerializerMethodField()
     followers_count = serializers.SerializerMethodField()
     rating_count = serializers.SerializerMethodField()
-    user_profile = AddProfileSerializer(read_only=True)
-    name = serializers.CharField(read_only=True)
+    profile = ProfileSerializer(read_only=True)
 
     class Meta:
         model = User
         fields = (
             "name",
-            "image",
+            "avatar",
+            "longitude",
             "location",
-            "user_profile",
+            "latitude",
             "following",
+            "cover_img",
             "followers",
             "following_count",
             "followers_count",
             "rating_count",
+            "profile",
+
         )
 
     def get_following(self, obj):
-        return FollowingSerializer(obj.following.all(), many=True).data
+        return FollowingSerializer(obj.followers.all(), many=True).data
 
     def get_followers(self, obj):
-        return FollowersSerializer(obj.followers.all(), many=True).data
+        return FollowersSerializer(obj.following.all(), many=True).data
 
     def get_following_count(self, instance):
-        return instance.following.count()
+        return instance.followers.count()
 
     def get_followers_count(self, instance):
-        return instance.followers.count()
+        return instance.following.count()
 
     def get_rating_count(self, instance):
         ratings = Rating.objects.filter(user=instance)
@@ -246,4 +245,3 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 #
-

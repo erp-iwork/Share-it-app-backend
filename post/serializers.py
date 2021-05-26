@@ -5,12 +5,14 @@ from main.models import (
     User,
     SharingStatus,
     SubCategory,
+    Rating
 )
 from rest_framework import serializers, status
-from user.serializers import UserSerializer
+from user.serializers import UserSerializer, RatingSerializer
 from utilities.exception_handler import CustomValidation
 from utilities.image_validation import validate_image
-from drf_extra_fields.geo_fields import PointField
+
+# from drf_extra_fields.geo_fields import PointField
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -26,6 +28,7 @@ class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
         fields = ("id", "name", "icon", "category", "category_id")
+
 
 class SubCategoryByCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -45,11 +48,16 @@ class ItemSerializer(serializers.ModelSerializer):
     owner_id = serializers.CharField(write_only=True)
     sub_category_id = serializers.CharField(write_only=True)
     sub_category = SubCategorySerializer(read_only=True)
-    location = PointField(allow_null=True)
+    rating = serializers.SerializerMethodField("get_all_rating")
 
     class Meta:
         model = ItemModel
         fields = "__all__"
+
+    def get_all_rating(self, val):
+        ratings = Rating.objects.filter(user=val.owner.id)
+        rating = RatingSerializer(ratings, many=True)
+        return rating.data
 
     def create(self, validated_data):
         """Validate the length images >2"""
@@ -67,12 +75,16 @@ class ItemSerializer(serializers.ModelSerializer):
             # Create item or product
             item = ItemModel.objects.create(**validated_data)
             user = self.context.get("request").user
-            transaction = SharingStatus.objects.create(
-                transaction_type="Sharing", user=user, item=item
-            )
+            if item.is_donating:
+                SharingStatus.objects.create(
+                    transaction_type="Donating", user=user, item=item
+                )
+            else:
+                SharingStatus.objects.create(
+                    transaction_type="Sharing", user=user, item=item
+                )
 
         except Exception as e:
-            print(e)
             raise CustomValidation()
 
         # Iterate and create images for using an item instance
@@ -111,4 +123,3 @@ class TransactionSerializer(serializers.ModelSerializer):
         model = SharingStatus
         fields = ("transaction_type", "item", "user", "transaction_time")
         write_only_fields = "user"
-

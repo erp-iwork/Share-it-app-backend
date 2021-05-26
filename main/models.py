@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
-from django.contrib.gis.db.models import PointField
 
 from django.conf import settings
 from datetime import datetime
@@ -18,7 +17,17 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from model_utils import Choices
 
-RATING = Choices((1, "one"), (2, "two"), (3, "three"), (4, "four"), (5, "five"),)
+RATING = Choices((1, "one"), (2, "two"), (3, "three"),
+                 (4, "four"), (5, "five"),)
+
+
+def upload_path(instance, filename):
+    """Storing an image with directory post_image with custom file name"""
+
+    now = datetime.now()
+    now_string = now.strftime("%d-%m-%Y %H:%M:%S")
+    new_filename = now_string + filename
+    return "/".join(["post_image", new_filename])
 
 
 class UserManager(BaseUserManager):
@@ -55,11 +64,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
-    zip_code = models.CharField(max_length=255)
-    location = PointField(null=True, blank=True)
-    image = models.ImageField(
-        upload_to="media/profile_pics", default="no-img.png", blank=True, null=True
-    )
+    zip_code = models.CharField(max_length=255, null=True, blank=True)
+    location = models.CharField(max_length=255, null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True, default=0.0)
+    longitude = models.FloatField(null=True, blank=True, default=0.0)
+    avatar = models.ImageField(upload_to=upload_path, default="no-img.png")
+    cover_img = models.ImageField(
+        upload_to=upload_path, default="no-img.png")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
@@ -71,15 +82,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.name
-
-
-def upload_path(instance, filename):
-    """Storing an image with directory post_image with custom file name"""
-
-    now = datetime.now()
-    now_string = now.strftime("%d-%m-%Y %H:%M:%S")
-    new_filename = now_string + filename
-    return "/".join(["post_image", new_filename])
 
 
 class Message(models.Model):
@@ -108,8 +110,14 @@ class Rating(models.Model):
     Rating user on a scale from one to 5
     """
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_rating")
+    ratingId = models.AutoField(primary_key=True,)
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="user_rating")
+    rater = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="user_rater")
     rating = models.PositiveSmallIntegerField(choices=RATING)
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user} has {self.rating}"
@@ -121,8 +129,7 @@ class Profile(models.Model):
     """
 
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="user_profile"
-    )
+        User, on_delete=models.CASCADE, related_name="profile")
     telegram = models.CharField(max_length=255, blank=True, null=True)
     facebook = models.CharField(max_length=255, blank=True, null=True)
     phonenumber = models.IntegerField(blank=True, null=True)
@@ -130,7 +137,7 @@ class Profile(models.Model):
     whatsapp = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return self.user
+        return self.user.name
 
 
 class Category(models.Model):
@@ -139,6 +146,7 @@ class Category(models.Model):
     """
 
     name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -150,7 +158,7 @@ class SubCategory(models.Model):
     """
 
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    icon = models.ImageField(upload_to="media/sub_category_icons")
+    icon = models.ImageField(upload_to=upload_path)
     name = models.CharField(max_length=255)
 
     def __str__(self):
@@ -159,24 +167,28 @@ class SubCategory(models.Model):
 
 class ItemModel(models.Model):
     itemId = models.UUIDField(
-        primary_key=True, null=False, default=uuid.uuid4, editable=False
-    )
-    location = PointField(null=True, blank=True)
+        primary_key=True, default=uuid.uuid4, editable=False)
+    latitude = models.FloatField(null=True, blank=True, default=0.0)
+    longitude = models.FloatField(null=True, blank=True, default=0.0)
     zip_code = models.CharField(max_length=255)
     price = models.FloatField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
     boost = models.BooleanField(default=False)
     is_available = models.BooleanField(default=True)
-    owner = models.ForeignKey(User, related_name="post_owner", on_delete=models.CASCADE)
+    owner = models.ForeignKey(
+        User, related_name="user", on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     condition = models.CharField(max_length=255)
     description = models.TextField()
     term_and_conditions = models.TextField()
     properties = JSONField(blank=True, null=True)
     is_donating = models.BooleanField(default=False)
+    view = models.IntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
+    city = models.CharField(max_length=255)
+    state = models.CharField(max_length=255)
 
     def __str__(self):
         return self.title
